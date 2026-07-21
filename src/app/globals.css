@@ -1,0 +1,450 @@
+@import "tailwindcss";
+
+/* ————— Midnight Ink (夜の墨) design tokens ————— */
+:root {
+  --ink-950: #0b0b12;
+  --ink-900: #10101a;
+  --ink-850: #14141f;
+  --ink-800: #1a1a28;
+  --ink-700: #232334;
+  --ink-600: #2e2e42;
+  --ink-500: #3d3d55;
+
+  --paper: #e9e6df;
+  --text: #e8e6e3;
+  --text-muted: #a3a1af;
+  --text-faint: #6d6c7c;
+
+  --vermillion: #e63946;
+  --vermillion-bright: #ff5a66;
+  --vermillion-deep: #b32836;
+  --sakura: #f4a7b9;
+  --gold: #d4af37;
+  --matcha: #8db580;
+  --mizu: #7eb8da;
+
+  --line: rgba(233, 230, 223, 0.08);
+  --line-strong: rgba(233, 230, 223, 0.16);
+
+  --glow-vermillion: 0 0 24px rgba(230, 57, 70, 0.35);
+  --watermark-stroke: rgba(233, 230, 223, 0.06);
+}
+
+/* ═════ Theme: Washi Paper (紙) — warm daylight study, hanko red, serif ═════ */
+[data-theme="washi"] {
+  --ink-950: #f4efe4;
+  --ink-900: #ede7d8;
+  --ink-850: #e8e1cf;
+  --ink-800: #dfd6c0;
+  --ink-700: #d2c7ac;
+  --ink-600: #bdb094;
+  --ink-500: #a2947a;
+  --paper: #fbf8f1;
+  --text: #2b2620;
+  --text-muted: #5d5548;
+  --text-faint: #8a8070;
+  --vermillion: #c1272d;
+  --vermillion-bright: #a51e24;
+  --vermillion-deep: #8f1a1f;
+  --sakura: #b85c6c;
+  --gold: #8f7420;
+  --matcha: #4e7a45;
+  --mizu: #2e6f97;
+  --line: rgba(43, 38, 32, 0.14);
+  --line-strong: rgba(43, 38, 32, 0.28);
+  --glow-vermillion: 0 0 20px rgba(193, 39, 45, 0.22);
+  --watermark-stroke: rgba(43, 38, 32, 0.09);
+  --page-bg: linear-gradient(180deg, #efe8d8 0%, #f4efe4 220px);
+}
+html[data-theme="washi"] {
+  color-scheme: light;
+}
+/* stronger paper grain + soft ink shadows */
+[data-theme="washi"] .noise-overlay {
+  opacity: 0.07;
+}
+[data-theme="washi"] .card-glow:hover {
+  box-shadow: 0 10px 26px rgba(43, 38, 32, 0.2), var(--glow-vermillion);
+}
+
+/* ═════ Theme: Manga Panel (漫) — stark B/W print: square corners, thick
+   rules, halftone screen, hard offset shadows, shouty gothic headings ═════ */
+[data-theme="panel"] {
+  --ink-950: #ffffff;
+  --ink-900: #f5f5f5;
+  --ink-850: #efefef;
+  --ink-800: #e3e3e3;
+  --ink-700: #cfcfcf;
+  --ink-600: #b0b0b0;
+  --ink-500: #8f8f8f;
+  --paper: #ffffff;
+  --text: #0d0d0d;
+  --text-muted: #3a3a3a;
+  --text-faint: #6e6e6e;
+  --vermillion: #e60012;
+  --vermillion-bright: #c4000f;
+  --vermillion-deep: #99000c;
+  --sakura: #c2185b;
+  --gold: #7a6200;
+  --matcha: #2e7d32;
+  --mizu: #1565c0;
+  --line: rgba(0, 0, 0, 0.35);
+  --line-strong: rgba(0, 0, 0, 0.7);
+  --glow-vermillion: 4px 4px 0 rgba(0, 0, 0, 0.85);
+  --watermark-stroke: rgba(0, 0, 0, 0.07);
+}
+html[data-theme="panel"] {
+  color-scheme: light;
+  /* headings switch to bold gothic caps */
+  --font-shippori: var(--font-zen);
+}
+[data-theme="panel"] .noise-overlay {
+  background-image: radial-gradient(circle, #000 1px, transparent 1.4px);
+  background-size: 9px 9px;
+  opacity: 0.05;
+}
+/* everything squares off like printed panels */
+[data-theme="panel"]
+  :is(.rounded, .rounded-sm, .rounded-md, .rounded-lg, .rounded-xl, .rounded-2xl, .rounded-t-2xl) {
+  border-radius: 0 !important;
+}
+[data-theme="panel"] .rounded-full {
+  border-radius: 3px !important;
+}
+[data-theme="panel"] .font-display {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+[data-theme="panel"] .card-glow:hover {
+  transform: translate(-2px, -2px);
+}
+
+/* ═════ Theme: Sakura Dream (桜) — pastel pink haze, extra-soft shapes ═════ */
+[data-theme="sakura"] {
+  --ink-950: #fdf2f5;
+  --ink-900: #fbe9ee;
+  --ink-850: #f9e2e9;
+  --ink-800: #f4d4dd;
+  --ink-700: #ecc2cf;
+  --ink-600: #dfa8ba;
+  --ink-500: #cf8da3;
+  --paper: #fffafc;
+  --text: #3d2530;
+  --text-muted: #7a5265;
+  --text-faint: #a97f92;
+  --vermillion: #d6336c;
+  --vermillion-bright: #b02458;
+  --vermillion-deep: #8f1d48;
+  --sakura: #e64980;
+  --gold: #b08968;
+  --matcha: #74a57f;
+  --mizu: #5c9ead;
+  --line: rgba(61, 37, 48, 0.1);
+  --line-strong: rgba(61, 37, 48, 0.2);
+  --glow-vermillion: 0 0 26px rgba(230, 73, 128, 0.3);
+  --watermark-stroke: rgba(214, 51, 108, 0.1);
+  --page-bg: linear-gradient(180deg, #ffe9f0 0%, #fdf2f5 320px);
+}
+html[data-theme="sakura"] {
+  color-scheme: light;
+}
+[data-theme="sakura"] .noise-overlay {
+  opacity: 0.015;
+}
+/* everything gets rounder and dreamier */
+[data-theme="sakura"] :is(.rounded-lg, .rounded-xl) {
+  border-radius: 1.1rem;
+}
+[data-theme="sakura"] :is(.rounded-2xl, .rounded-t-2xl) {
+  border-radius: 1.6rem;
+}
+[data-theme="sakura"] .card-glow:hover {
+  box-shadow: 0 14px 34px rgba(230, 73, 128, 0.22), var(--glow-vermillion);
+}
+
+/* ═════ Theme: Neon Tokyo (電) — cyberpunk night: cyan/magenta neon,
+   gothic type, scanlines, electric borders ═════ */
+[data-theme="neon"] {
+  --ink-950: #05060f;
+  --ink-900: #0a0c1a;
+  --ink-850: #0d1022;
+  --ink-800: #131730;
+  --ink-700: #1b2142;
+  --ink-600: #252c56;
+  --ink-500: #323a6e;
+  --paper: #e8f7ff;
+  --text: #e6f1ff;
+  --text-muted: #8fa3c8;
+  --text-faint: #5c6b94;
+  --vermillion: #ff2d78;
+  --vermillion-bright: #ff5c96;
+  --vermillion-deep: #c71e5c;
+  --sakura: #00e5ff;
+  --gold: #ffe14d;
+  --matcha: #3dffb0;
+  --mizu: #00e5ff;
+  --line: rgba(0, 229, 255, 0.14);
+  --line-strong: rgba(0, 229, 255, 0.32);
+  --glow-vermillion: 0 0 22px rgba(255, 45, 120, 0.5);
+  --watermark-stroke: rgba(0, 229, 255, 0.08);
+  --page-bg: radial-gradient(ellipse 120% 60% at 50% -10%, #131a3d 0%, #05060f 60%);
+}
+html[data-theme="neon"] {
+  /* headings go gothic/techy */
+  --font-shippori: var(--font-zen);
+}
+[data-theme="neon"] .noise-overlay {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(120, 240, 255, 0.05) 0 1px,
+    transparent 1px 3px
+  );
+  opacity: 0.5;
+}
+[data-theme="neon"] .card-glow:hover {
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.35), 0 0 34px rgba(255, 45, 120, 0.3);
+  border-color: rgba(0, 229, 255, 0.65);
+}
+[data-theme="neon"] .ink-stroke {
+  background: linear-gradient(90deg, #ff2d78, #00e5ff);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+}
+
+/* ═════ Theme: Zen Garden (庭) — deep moss green, sand & gold, unhurried ═════ */
+[data-theme="zen"] {
+  --ink-950: #101510;
+  --ink-900: #151b14;
+  --ink-850: #1a211a;
+  --ink-800: #222b21;
+  --ink-700: #2d382c;
+  --ink-600: #3c4a3a;
+  --ink-500: #4e5f4b;
+  --paper: #eef0e4;
+  --text: #e8ead9;
+  --text-muted: #a8b39c;
+  --text-faint: #74806c;
+  --vermillion: #6f9e55;
+  --vermillion-bright: #8ab873;
+  --vermillion-deep: #567d41;
+  --sakura: #d9c8a9;
+  --gold: #c9a227;
+  --matcha: #8db580;
+  --mizu: #7eb8da;
+  --line: rgba(232, 234, 217, 0.09);
+  --line-strong: rgba(232, 234, 217, 0.18);
+  --glow-vermillion: 0 0 20px rgba(111, 158, 85, 0.35);
+  --watermark-stroke: rgba(232, 234, 217, 0.06);
+  --page-bg: radial-gradient(ellipse 130% 70% at 50% -20%, #1a241a 0%, #101510 65%);
+}
+[data-theme="zen"] .noise-overlay {
+  opacity: 0.05;
+}
+[data-theme="zen"] .card-glow:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), var(--glow-vermillion);
+  border-color: rgba(141, 181, 128, 0.55);
+}
+
+@theme inline {
+  --color-ink-950: var(--ink-950);
+  --color-ink-900: var(--ink-900);
+  --color-ink-850: var(--ink-850);
+  --color-ink-800: var(--ink-800);
+  --color-ink-700: var(--ink-700);
+  --color-ink-600: var(--ink-600);
+  --color-ink-500: var(--ink-500);
+  --color-paper: var(--paper);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-faint: var(--text-faint);
+  --color-vermillion: var(--vermillion);
+  --color-vermillion-bright: var(--vermillion-bright);
+  --color-vermillion-deep: var(--vermillion-deep);
+  --color-sakura: var(--sakura);
+  --color-gold: var(--gold);
+  --color-matcha: var(--matcha);
+  --color-mizu: var(--mizu);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --font-display: var(--font-shippori), "Shippori Mincho", serif;
+  --font-sans: var(--font-zen), var(--font-inter), "Zen Kaku Gothic New", sans-serif;
+}
+
+html {
+  background: var(--page-bg, var(--ink-950));
+  color-scheme: dark;
+}
+
+body {
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(230, 57, 70, 0.4);
+  color: #fff;
+}
+
+/* Custom scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-600) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--ink-600);
+  border-radius: 8px;
+  border: 2px solid var(--ink-950);
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ————— Signature utilities ————— */
+
+/* Paper-grain noise overlay applied to the whole app */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Seigaiha (青海波) wave pattern */
+.seigaiha {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40' viewBox='0 0 80 40'%3E%3Cg fill='none' stroke='%23e9e6df' stroke-width='1'%3E%3Cpath d='M0 40a40 40 0 0 1 80 0M8 40a32 32 0 0 1 64 0M16 40a24 24 0 0 1 48 0M24 40a16 16 0 0 1 32 0M32 40a8 8 0 0 1 16 0'/%3E%3Cpath d='M-40 0a40 40 0 0 1 80 0M-32 0a32 32 0 0 1 64 0M-24 0a24 24 0 0 1 48 0M-16 0a16 16 0 0 1 32 0M-8 0a8 8 0 0 1 16 0' transform='translate(0 0)'/%3E%3Cpath d='M40 0a40 40 0 0 1 80 0M48 0a32 32 0 0 1 64 0M56 0a24 24 0 0 1 48 0M64 0a16 16 0 0 1 32 0M72 0a8 8 0 0 1 16 0'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 80px 40px;
+}
+
+/* Asanoha (麻の葉) hemp-leaf pattern */
+.asanoha {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='111' viewBox='0 0 64 111'%3E%3Cg fill='none' stroke='%23e9e6df' stroke-width='0.75'%3E%3Cpath d='M32 0L64 18.5v37L32 74 0 55.5v-37zM32 0v37m0 0L0 18.5M32 37l32-18.5M32 37L0 55.5M32 37l32 18.5M32 74v37m0-37L0 92.5M32 74l32 18.5M0 55.5v37L32 111l32-18.5v-37'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 64px 111px;
+}
+
+/* Vertical Japanese text */
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0.35em;
+}
+
+/* Giant kanji watermark behind section headers */
+.kanji-watermark {
+  position: absolute;
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--watermark-stroke);
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+  z-index: 0;
+}
+
+/* Ink-brush progress stroke */
+.ink-stroke {
+  background: linear-gradient(
+    90deg,
+    var(--vermillion-deep),
+    var(--vermillion) 60%,
+    var(--vermillion-bright)
+  );
+  border-radius: 2px 6px 6px 2px;
+  box-shadow: 0 0 8px rgba(230, 57, 70, 0.5);
+}
+
+/* Card hover glow */
+.card-glow {
+  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+}
+.card-glow:hover {
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.55),
+    var(--glow-vermillion);
+  border-color: rgba(230, 57, 70, 0.55);
+}
+
+/* Torii divider — thin vermillion rule with a thicker cap */
+.torii-rule {
+  height: 2px;
+  background: linear-gradient(90deg, var(--vermillion), transparent);
+  position: relative;
+}
+.torii-rule::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -3px;
+  width: 42px;
+  height: 8px;
+  background: var(--vermillion);
+  border-radius: 1px;
+}
+
+/* Brush-stroke underline for active nav */
+.brush-underline {
+  position: relative;
+}
+.brush-underline::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -4px;
+  height: 4px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'%3E%3Cpath d='M1 5.5C15 3 30 2.2 50 3c22 .9 35 1.6 48 .8.6 0 .8.6.3 1-10 1.9-30 2.7-49 2.2-18-.5-34 .1-47.6-.9-.8-.1-1-2.3-.7-2.6z' fill='%23e63946'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+}
+
+/* Enso circle spinner/ring base */
+@keyframes enso-draw {
+  from {
+    stroke-dashoffset: 290;
+  }
+  to {
+    stroke-dashoffset: 25;
+  }
+}
+
+/* Shimmer for skeletons */
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--ink-800) 25%,
+    var(--ink-700) 50%,
+    var(--ink-800) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite linear;
+}
+
+/* Hide scrollbar for horizontal rails */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+/* Line clamp helper for synopsis */
+.prose-ink a {
+  color: var(--sakura);
+  text-decoration: underline;
+}

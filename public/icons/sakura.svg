@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="50" fill="#d6336c"/>
+  <circle cx="50" cy="50" r="38" fill="#fffafc"/>
+  <text x="50" y="53" font-family="'Shippori Mincho','Yu Mincho','Hiragino Mincho ProN',serif" font-size="48" font-weight="700" fill="#16161f" text-anchor="middle" dominant-baseline="central">栞</text>
+</svg>
