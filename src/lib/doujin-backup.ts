@@ -99,6 +99,15 @@ function extractFromLegacyJson(text: string): {
     if (idx > 0) sourceNames.set(ext.slice(0, idx), ext.slice(idx + 1));
   }
 
+  // NOTE: unlike the modern .tachibk path (which skips entries with
+  // favorite === false, i.e. history-only manga you never actually
+  // favorited), this legacy path does NOT filter by a favorite flag. The
+  // old Tachiyomi JSON format's positional MANGA array is not something we
+  // have a verified field-by-field spec for, and guessing the wrong index
+  // for "favorite" risks silently dropping doujins the user genuinely
+  // favorited — a much worse failure than importing a few extra entries
+  // someone can just delete from the Annex. If you hit this with a real
+  // legacy backup and can confirm the flag's position, tighten this filter.
   const candidates: DoujinCandidate[] = [];
   let total = 0;
   for (const wrapper of json.mangas) {

@@ -182,10 +182,17 @@ function BackupExtract() {
       </div>
       <p className="mt-1 text-xs leading-relaxed text-faint">
         Upload a backup (.tachibk, .proto.gz, or legacy .json) and Shiori pulls out
-        only the nhentai / HentaiFox / Hitomi entries, fetching fresh tags, covers
-        and artists from each site. Regular manga are ignored here — import those on
-        the main Import page. For nhentai metadata, save your cookies in the card
-        above first.
+        only the nhentai / HentaiFox / HentaiEra / Hitomi entries, fetching fresh
+        tags, covers and artists from each site. Regular manga are ignored here —
+        import those on the main Import page. For nhentai metadata, save your
+        cookies in the card above first.{" "}
+        <span className="text-gold">
+          Legacy .json backups may include a few non-favorited (history-only)
+          entries
+        </span>{" "}
+        — the newer .tachibk format filters those out precisely, the older JSON
+        format doesn&apos;t reliably expose that flag, so extras just get pulled in
+        for you to delete if unwanted.
       </p>
       <button
         onClick={() => fileRef.current?.click()}

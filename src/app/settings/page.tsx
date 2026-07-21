@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  Activity,
   BellRing,
   BookLock,
   Download,
@@ -44,6 +45,7 @@ import {
   syncAllToAniList,
   type AniListConnection,
 } from "@/lib/anilist-sync";
+import { testAllSources, type SourceHealth } from "@/lib/source-health";
 import { DupeSection } from "@/components/settings/DupeSection";
 import {
   clearAllData,
@@ -178,6 +180,8 @@ export default function SettingsPage() {
         <AniListSyncSection />
 
         <MaintenanceSection />
+
+        <SourceHealthSection />
 
         <DupeSection />
 
@@ -726,6 +730,82 @@ function MaintenanceSection() {
           {typeState && <p className="mt-2 text-xs text-sakura">{typeState}</p>}
         </div>
       </div>
+    </section>
+  );
+}
+
+const STATUS_STYLE: Record<SourceHealth["status"], string> = {
+  ok: "bg-matcha/15 text-matcha",
+  "no-match": "bg-gold/15 text-gold",
+  down: "bg-vermillion/15 text-vermillion-bright",
+};
+const STATUS_LABEL: Record<SourceHealth["status"], string> = {
+  ok: "OK",
+  "no-match": "No match",
+  down: "Down",
+};
+
+function SourceHealthSection() {
+  const [results, setResults] = useState<SourceHealth[] | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function run() {
+    setBusy(true);
+    setResults(null);
+    setResults(await testAllSources());
+    setBusy(false);
+  }
+
+  return (
+    <section className="rounded-xl border border-line bg-ink-850 p-5">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
+            <Activity size={17} className="text-mizu" /> Source health
+          </h2>
+          <p className="mt-1.5 text-xs leading-relaxed text-muted">
+            These scraper sites have no official API and can break silently when
+            they change their markup. Pings each one with a near-universally
+            carried title (&quot;One Piece&quot;) — a red row means that source is likely
+            down or its scraper needs fixing, not that a specific series is
+            missing.
+          </p>
+        </div>
+        <button
+          onClick={run}
+          disabled={busy}
+          className="flex shrink-0 items-center gap-2 rounded-lg bg-ink-700 px-4 py-2 text-sm font-medium transition-colors hover:bg-ink-600 disabled:opacity-50"
+        >
+          {busy ? <Loader2 size={14} className="animate-spin" /> : <Activity size={14} />}
+          Test sources
+        </button>
+      </div>
+
+      {results && (
+        <div className="mt-4 grid gap-1.5 sm:grid-cols-2">
+          {results.map((r, i) => (
+            <div
+              key={`${r.name}-${r.kind}-${i}`}
+              className="flex items-center justify-between gap-2 rounded-lg border border-line bg-ink-900 px-3 py-2 text-xs"
+            >
+              <span className="truncate">
+                {r.name}
+                <span className="ml-1.5 text-faint">
+                  {r.kind === "cover" ? "covers" : "chapters"}
+                </span>
+              </span>
+              <span className="flex shrink-0 items-center gap-2">
+                <span className="text-faint">{r.ms}ms</span>
+                <span
+                  className={`rounded-full px-2 py-0.5 font-medium ${STATUS_STYLE[r.status]}`}
+                >
+                  {STATUS_LABEL[r.status]}
+                </span>
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
