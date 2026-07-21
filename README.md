@@ -2,9 +2,9 @@
 
 **Shiori** (栞, "bookmark") is a local-first tracker for everything you watch and read.
 It imports your existing lists from **AniList** and **MyAnimeList**, classifies manga
-by origin (manga / manhwa / pornhwa / manhua / novel — with a manual type override in
-the edit modal), and layers your own ratings, reviews and notes on top — all stored
-in your browser, no account needed.
+by origin (manga / manhwa / pornhwa / manhua — with a manual type override in the edit
+modal), and layers your own ratings, reviews and notes on top — all stored in your
+browser, no account needed.
 
 ## Features
 
@@ -18,7 +18,8 @@ in your browser, no account needed.
 - **Series pages** — synopsis, genres/tags, characters with voice actors (click for
   full character details), related series, "Similar to this" recommendations,
   Anime-Planet extras (community rating, tags, content warnings), and chapter lists
-  with source fallbacks (MangaDex → Comick → MangaUpdates) plus mark-read-up-to
+  pulled from whichever of MangaKatana / KaliScan / WeebCentral / Kagane is most
+  complete for that title (MangaUpdates as a last-resort fallback), plus mark-read-up-to
 - **Your data** — 10-point ratings (with halves), markdown reviews, quick notes
 - **Stats** — episodes/chapters totals, days watched, score distribution, genre and
   type breakdowns
@@ -32,7 +33,12 @@ in your browser, no account needed.
 - **Custom lists (選集)** — curated shelves with add-to-list from any series page,
   plus auto-updating **smart lists** built from filters (type/status/genre/rating)
 - **Updates feed (更新)** — checks the chapter sites for everything you're reading
-  and shows what has new chapters, with one-click catch-up
+  and shows what has new chapters, with one-click catch-up; can also auto-check
+  every ~12h on launch and fire a browser notification, with an unread badge on
+  the nav item
+- **AniList sync** — push-only, opt-in OAuth connection that sends your local
+  status/progress/score/dates back up to AniList, either per-series or in bulk
+  from Settings. Nothing syncs automatically.
 - **Discover (発見)** — this anime season, trending anime/manga/manhwa (and
   pornhwa) from AniList, add straight to Planning
 - **Quick search** — Ctrl+K command palette to jump to any series with inline +1

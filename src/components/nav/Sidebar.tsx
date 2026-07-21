@@ -17,6 +17,7 @@ import {
   Settings,
 } from "lucide-react";
 import { db } from "@/lib/db";
+import { unreadUpdateCount } from "@/lib/updates";
 
 const NAV = [
   { href: "/", label: "Home", icon: Home },
@@ -38,6 +39,7 @@ export function Sidebar() {
     async () => !!(await db.settings.get("annexPinHash")),
     []
   );
+  const unread = useLiveQuery(() => unreadUpdateCount(), []);
 
   return (
     <aside className="fixed left-0 top-0 z-40 hidden h-dvh w-20 flex-col items-center border-r border-line bg-ink-900/80 backdrop-blur-md md:flex">
@@ -65,7 +67,14 @@ export function Sidebar() {
                   : "text-faint hover:bg-ink-800 hover:text-text"
               }`}
             >
-              <Icon size={20} strokeWidth={active ? 2.4 : 1.8} />
+              <span className="relative">
+                <Icon size={20} strokeWidth={active ? 2.4 : 1.8} />
+                {href === "/updates" && !!unread && (
+                  <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-vermillion px-1 text-[9px] font-bold text-white">
+                    {unread > 9 ? "9+" : unread}
+                  </span>
+                )}
+              </span>
               <span
                 className={`mt-0.5 text-[8px] font-medium tracking-wide ${
                   active ? "text-sakura" : "text-faint group-hover:text-muted"

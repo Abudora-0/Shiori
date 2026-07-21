@@ -23,13 +23,21 @@ let chain: Promise<unknown> = Promise.resolve();
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export function gql<T>(query: string, variables: Record<string, unknown>): Promise<T> {
-  const run = chain.then(() => doGql<T>(query, variables));
+export function gql<T>(
+  query: string,
+  variables: Record<string, unknown>,
+  token?: string
+): Promise<T> {
+  const run = chain.then(() => doGql<T>(query, variables, token));
   chain = run.catch(() => {});
   return run;
 }
 
-async function doGql<T>(query: string, variables: Record<string, unknown>): Promise<T> {
+async function doGql<T>(
+  query: string,
+  variables: Record<string, unknown>,
+  token?: string
+): Promise<T> {
   for (let attempt = 0; attempt < 5; attempt++) {
     const wait = lastRequestAt + MIN_INTERVAL - Date.now();
     if (wait > 0) await sleep(wait);
@@ -39,7 +47,11 @@ async function doGql<T>(query: string, variables: Record<string, unknown>): Prom
     try {
       res = await fetch(ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ query, variables }),
       });
     } catch {

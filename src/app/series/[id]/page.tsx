@@ -30,6 +30,7 @@ import { ChapterList } from "@/components/series/ChapterList";
 import { ApInfoCard } from "@/components/series/ApInfoCard";
 import { AddToListButton } from "@/components/series/AddToListButton";
 import { LinkToAniList } from "@/components/series/LinkToAniList";
+import { PushToAniList } from "@/components/series/PushToAniList";
 import type { Series } from "@/lib/types";
 
 export default function SeriesPage() {
@@ -246,6 +247,7 @@ function SeriesDetail({ series, inLibrary }: { series: Series; inLibrary: boolea
                     </button>
                     <AddToListButton seriesId={series.id} />
                     <LinkToAniList series={series} />
+                    <PushToAniList series={series} entry={entry} />
                   </>
                 )
               )}

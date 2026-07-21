@@ -1,15 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
+  BellRing,
   BookLock,
   Download,
   ImageOff,
   KeyRound,
+  Link2,
   Loader2,
+  RefreshCw,
   Tags,
   Trash2,
+  Unlink,
   Upload,
 } from "lucide-react";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
@@ -23,6 +28,22 @@ import {
   disableAutoBackup,
 } from "@/lib/autobackup";
 import { formatDate } from "@/lib/format";
+import {
+  autoUpdateCheckStatus,
+  notificationsSupported,
+  requestNotificationPermission,
+  setAutoUpdateCheck,
+} from "@/lib/updates";
+import {
+  buildAuthorizeUrl,
+  completeAuthorization,
+  disconnect as disconnectAniList,
+  getClientCredentials,
+  getConnection,
+  saveClientCredentials,
+  syncAllToAniList,
+  type AniListConnection,
+} from "@/lib/anilist-sync";
 import { DupeSection } from "@/components/settings/DupeSection";
 import {
   clearAllData,
@@ -151,6 +172,10 @@ export default function SettingsPage() {
           </div>
           <AutoBackupRow />
         </section>
+
+        <UpdatesSection />
+
+        <AniListSyncSection />
 
         <MaintenanceSection />
 
@@ -374,6 +399,226 @@ function ThemeSection() {
           </button>
         ))}
       </div>
+    </section>
+  );
+}
+
+function UpdatesSection() {
+  const [enabled, setEnabled] = useState(false);
+  const [last, setLast] = useState<number | undefined>();
+  const [permission, setPermission] = useState<
+    NotificationPermission | "unsupported"
+  >("unsupported");
+  const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    autoUpdateCheckStatus().then((s) => {
+      setEnabled(s.enabled);
+      setLast(s.last);
+      setPermission(s.permission);
+    });
+  }, []);
+
+  async function toggle(next: boolean) {
+    setEnabled(next);
+    await setAutoUpdateCheck(next);
+    if (next && notificationsSupported() && Notification.permission === "default") {
+      // Fired from this onChange handler, so it still counts as a user
+      // gesture — browsers block permission prompts without one.
+      const result = await requestNotificationPermission();
+      setPermission(result);
+      if (result === "denied") {
+        setMsg(
+          "Notifications blocked — auto-checks will still run, but you won't get an alert. You can allow notifications for this site in your browser's settings."
+        );
+      }
+    }
+  }
+
+  return (
+    <section className="rounded-xl border border-line bg-ink-850 p-5">
+      <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
+        <BellRing size={17} className="text-gold" /> Updates
+      </h2>
+      <p className="mt-1.5 text-xs leading-relaxed text-muted">
+        Automatically check your Reading shelf for new chapters about every 12
+        hours when the app opens, and notify you if it finds any. You can always
+        check manually from the Updates page.
+      </p>
+      <label className="mt-4 flex items-center gap-2.5 text-sm">
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={(e) => toggle(e.target.checked)}
+          className="accent-[var(--vermillion)]"
+        />
+        Auto-check for new chapters
+      </label>
+      {enabled && (
+        <div className="mt-2 text-xs text-faint">
+          {last ? `Last checked ${formatDate(last)}` : "Not checked yet"}
+          {permission === "denied" && (
+            <span className="ml-2 text-gold">
+              (notifications blocked in this browser)
+            </span>
+          )}
+        </div>
+      )}
+      {msg && <p className="mt-2 text-xs text-muted">{msg}</p>}
+    </section>
+  );
+}
+
+/** Reads the ?code= param AniList redirects back with, then cleans the URL. */
+function OAuthCallbackHandler({ onCode }: { onCode: (code: string) => void }) {
+  const params = useSearchParams();
+  const router = useRouter();
+  const handled = useRef(false);
+
+  useEffect(() => {
+    const code = params.get("code");
+    if (code && !handled.current) {
+      handled.current = true;
+      onCode(code);
+      router.replace("/settings");
+    }
+  }, [params, router, onCode]);
+
+  return null;
+}
+
+function AniListSyncSection() {
+  const [clientId, setClientId] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
+  const [connection, setConnection] = useState<AniListConnection>({ connected: false });
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [syncState, setSyncState] = useState("");
+  const [redirectUri, setRedirectUri] = useState("");
+
+  useEffect(() => {
+    getClientCredentials().then(({ clientId, clientSecret }) => {
+      if (clientId) setClientId(clientId);
+      if (clientSecret) setClientSecret(clientSecret);
+    });
+    getConnection().then(setConnection);
+    setRedirectUri(`${window.location.origin}/settings`);
+  }, []);
+
+  async function connect() {
+    if (!clientId.trim() || !clientSecret.trim()) {
+      setMsg("Save both the Client ID and Secret first.");
+      return;
+    }
+    await saveClientCredentials(clientId.trim(), clientSecret.trim());
+    window.location.href = buildAuthorizeUrl(clientId.trim(), redirectUri);
+  }
+
+  async function handleCode(code: string) {
+    setBusy(true);
+    setMsg("Completing authorization…");
+    try {
+      const username = await completeAuthorization(code, redirectUri);
+      setConnection({ connected: true, username, clientId });
+      setMsg(`Connected as ${username}.`);
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "Authorization failed.");
+    }
+    setBusy(false);
+  }
+
+  async function disconnect() {
+    await disconnectAniList();
+    setConnection({ connected: false });
+    setMsg("Disconnected.");
+  }
+
+  async function syncNow() {
+    setBusy(true);
+    setSyncState("Starting sync…");
+    try {
+      const result = await syncAllToAniList((p) =>
+        setSyncState(`Pushing ${p.count}/${p.total}: ${p.current}`)
+      );
+      setSyncState(`Done — ${result.pushed} pushed, ${result.failed} failed.`);
+    } catch (e) {
+      setSyncState(e instanceof Error ? e.message : "Sync failed.");
+    }
+    setBusy(false);
+  }
+
+  return (
+    <section className="rounded-xl border border-line bg-ink-850 p-5">
+      <Suspense fallback={null}>
+        <OAuthCallbackHandler onCode={handleCode} />
+      </Suspense>
+      <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
+        <Link2 size={17} className="text-mizu" /> AniList sync
+      </h2>
+      <p className="mt-1.5 text-xs leading-relaxed text-muted">
+        Push-only: sends your local status/progress/score/dates up to AniList for
+        every series linked to it. Nothing here runs automatically — Shiori never
+        writes to your AniList account unless you click Sync. Register a free app at{" "}
+        <a
+          href="https://anilist.co/settings/developer"
+          target="_blank"
+          rel="noreferrer"
+          className="text-sakura underline"
+        >
+          anilist.co/settings/developer
+        </a>{" "}
+        with redirect URL set to{" "}
+        <span className="break-all text-text">{redirectUri || "this page's URL"}</span>.
+      </p>
+
+      {!connection.connected ? (
+        <div className="mt-4 space-y-2">
+          <div className="flex flex-wrap gap-2">
+            <input
+              value={clientId}
+              onChange={(e) => setClientId(e.target.value)}
+              placeholder="Client ID"
+              className="w-32 rounded-lg border border-line-strong bg-ink-900 px-3 py-2 font-mono text-sm outline-none focus:border-vermillion"
+            />
+            <input
+              value={clientSecret}
+              onChange={(e) => setClientSecret(e.target.value)}
+              placeholder="Client Secret"
+              type="password"
+              className="w-48 rounded-lg border border-line-strong bg-ink-900 px-3 py-2 font-mono text-sm outline-none focus:border-vermillion"
+            />
+            <button
+              onClick={connect}
+              disabled={busy}
+              className="flex items-center gap-1.5 rounded-lg bg-vermillion px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-vermillion-bright disabled:opacity-50"
+            >
+              <Link2 size={14} /> Connect
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <span className="text-sm text-matcha">
+            Connected as <span className="font-semibold">{connection.username}</span>
+          </span>
+          <button
+            onClick={syncNow}
+            disabled={busy}
+            className="flex items-center gap-1.5 rounded-lg bg-ink-700 px-4 py-2 text-sm font-medium transition-colors hover:bg-ink-600 disabled:opacity-50"
+          >
+            {busy ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+            Sync now
+          </button>
+          <button
+            onClick={disconnect}
+            className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs text-vermillion transition-colors hover:bg-vermillion/10"
+          >
+            <Unlink size={13} /> Disconnect
+          </button>
+        </div>
+      )}
+      {syncState && <p className="mt-2 text-xs text-muted">{syncState}</p>}
+      {msg && <p className="mt-2 text-xs text-muted">{msg}</p>}
     </section>
   );
 }
