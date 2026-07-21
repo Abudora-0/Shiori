@@ -20,7 +20,7 @@ interface DoujinCandidate {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-function detect(
+export function detect(
   url: string | undefined,
   sourceName: string | undefined
 ): { source: DoujinSource; id: string } | null {

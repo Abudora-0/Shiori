@@ -22,7 +22,7 @@ function normalize(s: string): string {
     .trim();
 }
 
-function titlesMatch(a: string, b: string): boolean {
+export function titlesMatch(a: string, b: string): boolean {
   const na = normalize(a);
   const nb = normalize(b);
   if (!na || !nb) return false;
@@ -36,7 +36,7 @@ function titlesMatch(a: string, b: string): boolean {
 }
 
 /** Search variants for stubborn titles: strip brackets/noise, cut at colon. */
-function titleVariants(s: Series): string[] {
+export function titleVariants(s: Series): string[] {
   const main = displayTitle(s.title);
   const cleaned = main
     .replace(/[\[(][^\])]*[\])]/g, " ")

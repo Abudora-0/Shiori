@@ -130,7 +130,7 @@ export const HARD_ADULT_SOURCES =
 const KOREAN_SOURCES =
   /toonily|hiperdex|manhwaclan|newtoki|manhwa|toon|webtoon/i;
 
-function guessKind(genres: string[], sourceName?: string): MediaKind {
+export function guessKind(genres: string[], sourceName?: string): MediaKind {
   if (sourceName && HARD_ADULT_SOURCES.test(sourceName)) return "PORNHWA";
   const g = genres.map((x) => x.toLowerCase());
   const korean =
@@ -167,7 +167,7 @@ function localSeries(m: RawBackupManga, sourceName?: string): Series {
   };
 }
 
-function readProgress(m: RawBackupManga): number {
+export function readProgress(m: RawBackupManga): number {
   let max = 0;
   for (const c of m.chapters ?? []) {
     if (c.read && (c.chapterNumber ?? 0) > max) max = c.chapterNumber!;

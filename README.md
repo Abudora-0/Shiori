@@ -50,6 +50,7 @@ in your browser, no account needed.
 ```bash
 npm install
 npm run dev      # http://localhost:3000
+npm test         # run the unit test suite (vitest)
 ```
 
 Data lives in IndexedDB (per browser). Export a backup from Settings before clearing
