@@ -9,8 +9,7 @@ browser, no account needed.
 ## Features
 
 - **Import** — AniList (public GraphQL, just a username), MyAnimeList (official API
-  with a free Client ID), Kitsu (public API), Anime-Planet (best-effort profile
-  scrape with AniList title-matching) and **Mihon / Tachiyomi backups**
+  with a free Client ID), Kitsu (public API) and **Mihon / Tachiyomi backups**
   (`.tachibk` / `.proto.gz`, parsed entirely in your browser, resolved via embedded
   tracker links). Cross-service dedupe via AniList↔MAL↔Kitsu id mapping.
 - **Library** — tabs per type, status filters, sorting, search, grid/list views,

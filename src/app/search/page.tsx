@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Search as SearchIcon } from "lucide-react";
@@ -12,18 +12,25 @@ import { useLibraryIds } from "@/lib/hooks";
 
 type TypeFilter = "ALL" | "ANIME" | "MANGA";
 
-export default function SearchPage() {
-  return (
-    <Suspense>
-      <SearchInner />
-    </Suspense>
-  );
+/** Reads the ?q= param once on mount. Isolated + Suspense-wrapped so a bare
+ * useSearchParams() read can't gate hydration of the whole page (that left
+ * this route blank on a hard navigation — see settings/page.tsx's
+ * OAuthCallbackHandler for the same pattern). */
+function InitialQueryReader({ onQuery }: { onQuery: (q: string) => void }) {
+  const q = useSearchParams().get("q") ?? "";
+  const applied = useRef(false);
+  useEffect(() => {
+    if (!applied.current && q) {
+      applied.current = true;
+      onQuery(q);
+    }
+  }, [q, onQuery]);
+  return null;
 }
 
-function SearchInner() {
-  const initial = useSearchParams().get("q") ?? "";
-  const [input, setInput] = useState(initial);
-  const [query, setQuery] = useState(initial);
+export default function SearchPage() {
+  const [input, setInput] = useState("");
+  const [query, setQuery] = useState("");
   const [type, setType] = useState<TypeFilter>("ALL");
   const libraryIds = useLibraryIds();
 
@@ -42,6 +49,9 @@ function SearchInner() {
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-6 md:px-8">
+      <Suspense fallback={null}>
+        <InitialQueryReader onQuery={(q) => { setInput(q); setQuery(q); }} />
+      </Suspense>
       <KanjiHeading
         kanji="検索"
         title="Search"
