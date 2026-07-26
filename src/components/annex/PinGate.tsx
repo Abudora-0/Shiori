@@ -129,6 +129,10 @@ function PinInput({
       onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, 12))}
       onKeyDown={(e) => e.key === "Enter" && onEnter?.()}
       placeholder={placeholder}
+      autoComplete="off"
+      data-lpignore="true"
+      data-1p-ignore="true"
+      data-bwignore="true"
       className="w-full rounded-lg border border-line-strong bg-ink-900 px-3 py-2.5 text-center font-display text-lg tracking-[0.5em] outline-none focus:border-vermillion"
     />
   );
