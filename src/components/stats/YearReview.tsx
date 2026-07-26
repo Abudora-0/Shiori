@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { LibraryItem } from "@/lib/hooks";
 import { KIND_LABEL } from "@/lib/format";
+import { Select } from "@/components/ui/Select";
 
 const MONTHS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 
@@ -73,17 +74,12 @@ export function YearReview({ items }: { items: LibraryItem[] | undefined }) {
     <section className="rounded-xl border border-line bg-ink-850 p-5">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-display text-lg font-semibold">Year in review</h2>
-        <select
-          value={year}
-          onChange={(e) => setYear(Number(e.target.value))}
-          className="rounded-lg border border-line-strong bg-ink-900 px-3 py-1.5 text-sm outline-none focus:border-vermillion"
-        >
-          {years.map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          ))}
-        </select>
+        <Select
+          value={String(year)}
+          onChange={(v) => setYear(Number(v))}
+          options={years.map((y) => ({ value: String(y), label: String(y) }))}
+          className="rounded-lg border border-line-strong bg-ink-900 px-3 py-1.5 text-sm"
+        />
       </div>
 
       {s.finished.length === 0 ? (

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
+import { Select } from "@/components/ui/Select";
+import { DatePicker } from "@/components/ui/DatePicker";
 import { db, logActivity } from "@/lib/db";
 import { useEntry, useSeries } from "@/lib/hooks";
 import { useUiStore } from "@/lib/store";
@@ -189,17 +191,12 @@ export function EditEntryModal() {
             <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-faint">
               Type
             </label>
-            <select
+            <Select
               value={kind ?? series.kind}
-              onChange={(e) => setKind(e.target.value as MediaKind)}
-              className="w-full rounded-lg border border-line-strong bg-ink-900 px-3 py-2 text-sm outline-none focus:border-vermillion"
-            >
-              {ALL_KINDS.map((k) => (
-                <option key={k} value={k}>
-                  {KIND_LABEL[k]}
-                </option>
-              ))}
-            </select>
+              onChange={(v) => setKind(v as MediaKind)}
+              options={ALL_KINDS.map((k) => ({ value: k, label: KIND_LABEL[k] }))}
+              className="w-full rounded-lg border border-line-strong bg-ink-900 px-3 py-2 text-sm"
+            />
           </div>
 
           {/* Dates */}
@@ -208,22 +205,20 @@ export function EditEntryModal() {
               <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-faint">
                 Started
               </label>
-              <input
-                type="date"
+              <DatePicker
                 value={startedAt}
-                onChange={(e) => setStartedAt(e.target.value)}
-                className="w-full rounded-lg border border-line-strong bg-ink-900 px-3 py-2 text-sm outline-none focus:border-vermillion"
+                onChange={setStartedAt}
+                className="w-full rounded-lg border border-line-strong bg-ink-900 px-3 py-2 text-sm"
               />
             </div>
             <div>
               <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-faint">
                 Finished
               </label>
-              <input
-                type="date"
+              <DatePicker
                 value={finishedAt}
-                onChange={(e) => setFinishedAt(e.target.value)}
-                className="w-full rounded-lg border border-line-strong bg-ink-900 px-3 py-2 text-sm outline-none focus:border-vermillion"
+                onChange={setFinishedAt}
+                className="w-full rounded-lg border border-line-strong bg-ink-900 px-3 py-2 text-sm"
               />
             </div>
           </div>

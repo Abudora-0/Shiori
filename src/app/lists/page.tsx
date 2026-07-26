@@ -11,6 +11,7 @@ import { useLibrary, type LibraryItem } from "@/lib/hooks";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { Chip } from "@/components/ui/Chip";
 import { Cover } from "@/components/ui/Cover";
+import { Select } from "@/components/ui/Select";
 import type { CustomList, EntryStatus, MediaKind, SmartFilter } from "@/lib/types";
 
 export default function ListsPage() {
@@ -161,18 +162,12 @@ function SmartListBuilder({ items }: { items: LibraryItem[] | undefined }) {
             ))}
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <select
+            <Select
               value={genre}
-              onChange={(e) => setGenre(e.target.value)}
-              className="rounded-lg border border-line-strong bg-ink-900 px-3 py-1.5 text-sm outline-none focus:border-vermillion"
-            >
-              <option value="">Any genre</option>
-              {genres.map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
+              onChange={setGenre}
+              options={[{ value: "", label: "Any genre" }, ...genres.map((g) => ({ value: g, label: g }))]}
+              className="rounded-lg border border-line-strong bg-ink-900 px-3 py-1.5 text-sm"
+            />
             <label className="flex items-center gap-2 text-xs text-muted">
               Min rating
               <input

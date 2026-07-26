@@ -10,6 +10,7 @@ import { CardGridSkeleton } from "@/components/ui/Skeleton";
 import { CoverCard } from "@/components/library/CoverCard";
 import { EditEntryModal } from "@/components/library/EditEntryModal";
 import { Cover } from "@/components/ui/Cover";
+import { Select } from "@/components/ui/Select";
 import { useLibrary } from "@/lib/hooks";
 import { useUiStore, type LibrarySort } from "@/lib/store";
 import {
@@ -162,29 +163,18 @@ export default function LibraryPage() {
               className="w-44 rounded-full border border-line-strong bg-ink-800 py-1.5 pl-8 pr-3 text-sm outline-none transition-all focus:w-56 focus:border-vermillion md:w-52"
             />
           </div>
-          <select
+          <Select
             value={ui.genreFilter}
-            onChange={(e) => ui.setGenreFilter(e.target.value)}
-            className="max-w-36 rounded-full border border-line-strong bg-ink-800 px-3 py-1.5 text-sm outline-none focus:border-vermillion"
-          >
-            <option value="all">All genres</option>
-            {genres.map((g) => (
-              <option key={g} value={g}>
-                {g}
-              </option>
-            ))}
-          </select>
-          <select
+            onChange={ui.setGenreFilter}
+            options={[{ value: "all", label: "All genres" }, ...genres.map((g) => ({ value: g, label: g }))]}
+            className="max-w-36 rounded-full border border-line-strong bg-ink-800 px-3 py-1.5 text-sm"
+          />
+          <Select
             value={ui.sort}
-            onChange={(e) => ui.setSort(e.target.value as LibrarySort)}
-            className="rounded-full border border-line-strong bg-ink-800 px-3 py-1.5 text-sm outline-none focus:border-vermillion"
-          >
-            {SORTS.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </select>
+            onChange={(v) => ui.setSort(v as LibrarySort)}
+            options={SORTS}
+            className="rounded-full border border-line-strong bg-ink-800 px-3 py-1.5 text-sm"
+          />
           <div className="flex overflow-hidden rounded-full border border-line-strong">
             <button
               onClick={() => ui.setView("grid")}

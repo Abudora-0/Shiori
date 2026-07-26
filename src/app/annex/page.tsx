@@ -10,6 +10,7 @@ import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { Cover } from "@/components/ui/Cover";
 import { Chip } from "@/components/ui/Chip";
 import { Pagination } from "@/components/ui/Pagination";
+import { Select } from "@/components/ui/Select";
 import { PinGate } from "@/components/annex/PinGate";
 import { ImportPanel } from "@/components/annex/ImportPanel";
 import { DoujinModal } from "@/components/annex/DoujinModal";
@@ -124,27 +125,29 @@ function AnnexLibrary() {
             className="w-56 rounded-full border border-line-strong bg-ink-800 py-1.5 pl-8 pr-3 text-sm outline-none transition-all focus:w-72 focus:border-vermillion"
           />
         </div>
-        <select
+        <Select
           value={source}
-          onChange={(e) => setSource(e.target.value as DoujinSource | "all")}
-          className="rounded-full border border-line-strong bg-ink-800 px-3 py-1.5 text-sm outline-none focus:border-vermillion"
-        >
-          <option value="all">All sources</option>
-          <option value="nhentai">nhentai</option>
-          <option value="hentaifox">HentaiFox</option>
-          <option value="hentaiera">HentaiEra</option>
-          <option value="hitomi">Hitomi</option>
-        </select>
-        <select
+          onChange={(v) => setSource(v as DoujinSource | "all")}
+          options={[
+            { value: "all", label: "All sources" },
+            { value: "nhentai", label: "nhentai" },
+            { value: "hentaifox", label: "HentaiFox" },
+            { value: "hentaiera", label: "HentaiEra" },
+            { value: "hitomi", label: "Hitomi" },
+          ]}
+          className="rounded-full border border-line-strong bg-ink-800 px-3 py-1.5 text-sm"
+        />
+        <Select
           value={sort}
-          onChange={(e) => setSort(e.target.value as AnnexSort)}
-          className="rounded-full border border-line-strong bg-ink-800 px-3 py-1.5 text-sm outline-none focus:border-vermillion"
-        >
-          <option value="added">Recently added</option>
-          <option value="rating">Your rating</option>
-          <option value="title">Title</option>
-          <option value="pages">Pages</option>
-        </select>
+          onChange={(v) => setSort(v as AnnexSort)}
+          options={[
+            { value: "added", label: "Recently added" },
+            { value: "rating", label: "Your rating" },
+            { value: "title", label: "Title" },
+            { value: "pages", label: "Pages" },
+          ]}
+          className="rounded-full border border-line-strong bg-ink-800 px-3 py-1.5 text-sm"
+        />
         <Chip active={favOnly} onClick={() => setFavOnly((f) => !f)}>
           ♥ Favorites
         </Chip>

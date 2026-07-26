@@ -415,6 +415,18 @@ body {
   }
 }
 
+/* Custom dropdown/date-picker popup entrance */
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Shimmer for skeletons */
 @keyframes shimmer {
   0% {
