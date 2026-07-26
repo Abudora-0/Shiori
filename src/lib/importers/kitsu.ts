@@ -37,10 +37,32 @@ interface KitsuResource {
   relationships?: Record<string, { data?: { id: string; type: string }[] | { id: string; type: string } }>;
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Retries on a bare network/CORS failure (fetch() rejecting outright) - this
+ * is how Cloudflare-fronted APIs typically present rate-limiting to the
+ * browser: no readable status code, just an uncatchable "Failed to fetch"
+ * (same quirk documented on AniList's gql() queue).
+ */
 async function kitsuGet(url: string): Promise<{ data: KitsuResource[]; included?: KitsuResource[]; links?: { next?: string } }> {
-  const res = await fetch(url, { headers: HEADERS });
-  if (!res.ok) throw new Error(`Kitsu error (${res.status}).`);
-  return res.json();
+  for (let attempt = 0; attempt < 4; attempt++) {
+    let res: Response;
+    try {
+      res = await fetch(url, { headers: HEADERS });
+    } catch {
+      await sleep(2000 * (attempt + 1));
+      continue;
+    }
+    if (res.status === 429) {
+      const retryAfter = Number(res.headers.get("Retry-After") ?? "5") * 1000;
+      await sleep(retryAfter);
+      continue;
+    }
+    if (!res.ok) throw new Error(`Kitsu error (${res.status}).`);
+    return res.json();
+  }
+  throw new Error("Kitsu is rate-limiting right now - wait a bit and try again.");
 }
 
 async function userIdExists(id: string): Promise<boolean> {
@@ -156,6 +178,7 @@ export async function fetchKitsuUserList(
     onProgress?.({ phase: "fetching", count: entries.length });
     if (!json.links?.next) break;
     url = json.links.next;
+    await sleep(300);
   }
 
   // Collect external ids from mappings
