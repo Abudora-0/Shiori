@@ -27,25 +27,33 @@ export function detect(
   const u = url ?? "";
   const name = (sourceName ?? "").toLowerCase();
 
-  // "/g/<id>/" is nhentai's extension URL shape
-  let m = /\/g\/(\d+)/.exec(u);
-  if (m && (!name || name.includes("nhentai"))) return { source: "nhentai", id: m[1] };
-  // "/gallery/<id>" is shared by the IMHentai family - name disambiguates
-  m = /\/gallery\/(\d+)/.exec(u);
-  if (m) {
-    if (name.includes("hentaiera")) return { source: "hentaiera", id: m[1] };
-    if (!name || name.includes("hentaifox")) return { source: "hentaifox", id: m[1] };
-  }
-  m = /(?:galleries|manga|doujinshi|cg|gamecg|reader)\/(?:[^/]*-)?(\d+)(?:\.html)?/.exec(u);
-  if (m && name.includes("hitomi")) return { source: "hitomi", id: m[1] };
+  // Require the real site's domain or an explicit source name before trying
+  // to pull an id out of the URL - a bare path shape like "/g/<id>/" is not
+  // unique to nhentai and turns up constantly in ordinary manga site URLs,
+  // so treating an unnamed source as a match (the previous behavior) misread
+  // large swaths of a real Mihon library as doujins.
+  const isNhentai = /nhentai\.net/.test(u) || name.includes("nhentai");
+  const isHentaiEra = /hentaiera\.com/.test(u) || name.includes("hentaiera");
+  const isHentaiFox = /hentaifox\.com/.test(u) || name.includes("hentaifox");
+  const isHitomi = /hitomi\.la/.test(u) || name.includes("hitomi");
 
-  // URL didn't match a known shape - fall back to the extension name + digits
-  const digits = /(\d{3,})/.exec(u)?.[1];
-  if (digits) {
-    if (name.includes("nhentai")) return { source: "nhentai", id: digits };
-    if (name.includes("hentaiera")) return { source: "hentaiera", id: digits };
-    if (name.includes("hentaifox")) return { source: "hentaifox", id: digits };
-    if (name.includes("hitomi")) return { source: "hitomi", id: digits };
+  if (isNhentai) {
+    const m = /\/g\/(\d+)/.exec(u) ?? /(\d{3,})/.exec(u);
+    if (m) return { source: "nhentai", id: m[1] };
+  }
+  if (isHentaiEra) {
+    const m = /\/(?:gallery|g)\/(\d+)/.exec(u) ?? /(\d{3,})/.exec(u);
+    if (m) return { source: "hentaiera", id: m[1] };
+  }
+  if (isHentaiFox) {
+    const m = /\/(?:gallery|g)\/(\d+)/.exec(u) ?? /(\d{3,})/.exec(u);
+    if (m) return { source: "hentaifox", id: m[1] };
+  }
+  if (isHitomi) {
+    const m =
+      /(?:galleries|manga|doujinshi|cg|gamecg|reader)\/(?:[^/]*-)?(\d+)(?:\.html)?/.exec(u) ??
+      /(\d{3,})/.exec(u);
+    if (m) return { source: "hitomi", id: m[1] };
   }
   return null;
 }
