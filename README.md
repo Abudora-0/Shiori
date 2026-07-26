@@ -1,53 +1,53 @@
-# 栞 Shiori — Anime / Manga / Manhwa / Manhua Tracker
+# 栞 Shiori - Anime / Manga / Manhwa / Manhua Tracker
 
 **Shiori** (栞, "bookmark") is a local-first tracker for everything you watch and read.
 It imports your existing lists from **AniList** and **MyAnimeList**, classifies manga
-by origin (manga / manhwa / pornhwa / manhua — with a manual type override in the edit
-modal), and layers your own ratings, reviews and notes on top — all stored in your
+by origin (manga / manhwa / pornhwa / manhua - with a manual type override in the edit
+modal), and layers your own ratings, reviews and notes on top - all stored in your
 browser, no account needed.
 
 ## Features
 
-- **Import** — AniList (public GraphQL, just a username), MyAnimeList (official API
+- **Import** - AniList (public GraphQL, just a username), MyAnimeList (official API
   with a free Client ID), Kitsu (public API) and **Mihon / Tachiyomi backups**
   (`.tachibk` / `.proto.gz`, parsed entirely in your browser, resolved via embedded
   tracker links). Cross-service dedupe via AniList↔MAL↔Kitsu id mapping.
-- **Library** — tabs per type, status filters, sorting, search, grid/list views,
+- **Library** - tabs per type, status filters, sorting, search, grid/list views,
   quick +1 progress, favorites
-- **Series pages** — synopsis, genres/tags, characters with voice actors (click for
+- **Series pages** - synopsis, genres/tags, characters with voice actors (click for
   full character details), related series, "Similar to this" recommendations,
   Anime-Planet extras (community rating, tags, content warnings), and chapter lists
   pulled from whichever of MangaKatana / KaliScan / WeebCentral / Kagane is most
   complete for that title (MangaUpdates as a last-resort fallback), plus mark-read-up-to
-- **Your data** — 10-point ratings (with halves), markdown reviews, quick notes
-- **Stats** — episodes/chapters totals, days watched, score distribution, genre and
+- **Your data** - 10-point ratings (with halves), markdown reviews, quick notes
+- **Stats** - episodes/chapters totals, days watched, score distribution, genre and
   type breakdowns
-- **Backup** — one-click JSON export/import of the entire database
+- **Backup** - one-click JSON export/import of the entire database
 
-- **Annex (別館)** — a PIN-gated doujin shelf, hidden from the sidebar until set up
+- **Annex (別館)** - a PIN-gated doujin shelf, hidden from the sidebar until set up
   and locked whenever the browser closes. Import your nhentai favorites (with your
   own session cookies), add galleries by link from nhentai / HentaiFox / Hitomi, or
   upload a Tachiyomi / TachiyomiAZ / Mihon backup to extract just its doujin entries
   with fresh site metadata. Tag & artist browsing, favorites, ratings, private notes.
-- **Custom lists (選集)** — curated shelves with add-to-list from any series page,
+- **Custom lists (選集)** - curated shelves with add-to-list from any series page,
   plus auto-updating **smart lists** built from filters (type/status/genre/rating)
-- **Updates feed (更新)** — checks the chapter sites for everything you're reading
+- **Updates feed (更新)** - checks the chapter sites for everything you're reading
   and shows what has new chapters, with one-click catch-up; can also auto-check
   every ~12h on launch and fire a browser notification, with an unread badge on
   the nav item
-- **AniList sync** — push-only, opt-in OAuth connection that sends your local
+- **AniList sync** - push-only, opt-in OAuth connection that sends your local
   status/progress/score/dates back up to AniList, either per-series or in bulk
   from Settings. Nothing syncs automatically.
-- **Discover (発見)** — this anime season, trending anime/manga/manhwa (and
+- **Discover (発見)** - this anime season, trending anime/manga/manhwa (and
   pornhwa) from AniList, add straight to Planning
-- **Quick search** — Ctrl+K command palette to jump to any series with inline +1
-- **Airing calendar (放送)** — day-by-day air times with countdowns for the anime
+- **Quick search** - Ctrl+K command palette to jump to any series with inline +1
+- **Airing calendar (放送)** - day-by-day air times with countdowns for the anime
   in your library
-- **Activity heatmap + Year in review** — GitHub-style year grid plus yearly
+- **Activity heatmap + Year in review** - GitHub-style year grid plus yearly
   wrap-ups (completions by month, your scores vs community)
-- **Maintenance** — cover repair across a dozen sources, Pornhwa re-classification,
+- **Maintenance** - cover repair across a dozen sources, Pornhwa re-classification,
   duplicate merge, link-local-entries-to-AniList
-- **PWA + auto-backup** — installable, with optional daily JSON backups to a
+- **PWA + auto-backup** - installable, with optional daily JSON backups to a
   folder (File System Access API)
 
 ## Running

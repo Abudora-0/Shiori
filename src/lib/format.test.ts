@@ -57,8 +57,8 @@ describe("formatRating", () => {
   });
 
   it("shows an em dash for unrated entries", () => {
-    expect(formatRating(undefined)).toBe("—");
-    expect(formatRating(0)).toBe("—");
+    expect(formatRating(undefined)).toBe("-");
+    expect(formatRating(0)).toBe("-");
   });
 });
 

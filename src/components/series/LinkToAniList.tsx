@@ -53,7 +53,7 @@ export function LinkToAniList({ series }: { series: Series }) {
 
       <Modal open={open} onClose={() => setOpen(false)} title="Link to AniList" wide>
         <p className="mb-3 text-xs text-muted">
-          Pick the matching AniList entry — your progress, rating, reviews and notes
+          Pick the matching AniList entry - your progress, rating, reviews and notes
           move over, and the series gains full metadata (characters, related,
           recommendations).
         </p>
@@ -80,7 +80,7 @@ export function LinkToAniList({ series }: { series: Series }) {
 
         {busy ? null : results?.length === 0 ? (
           <p className="py-6 text-center text-sm text-faint">
-            No AniList results — try a shorter or alternative title.
+            No AniList results - try a shorter or alternative title.
           </p>
         ) : (
           <div className="max-h-[45dvh] space-y-2 overflow-y-auto pr-1">

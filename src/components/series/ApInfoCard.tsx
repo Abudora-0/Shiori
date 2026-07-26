@@ -31,7 +31,7 @@ export function ApInfoCard({ series }: { series: Series }) {
     },
   });
 
-  // Silent when AP has nothing — it's supplementary info, not a core section
+  // Silent when AP has nothing - it's supplementary info, not a core section
   if (isLoading || !data) return null;
 
   return (

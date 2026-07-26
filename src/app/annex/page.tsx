@@ -188,7 +188,7 @@ function AnnexLibrary() {
           <p className="mt-4 text-sm text-muted">
             {doujins?.length
               ? "Nothing matches these filters."
-              : "The annex is empty — open Import & add above to fill the shelf."}
+              : "The annex is empty - open Import & add above to fill the shelf."}
           </p>
         </div>
       ) : (

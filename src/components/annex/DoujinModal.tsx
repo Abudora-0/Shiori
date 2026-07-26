@@ -156,7 +156,7 @@ export function DoujinModal({
                   Rating
                 </span>
                 <span className="font-display text-lg text-gold">
-                  {rating > 0 ? rating.toFixed(1).replace(/\.0$/, "") : "—"}
+                  {rating > 0 ? rating.toFixed(1).replace(/\.0$/, "") : "-"}
                   <span className="ml-1 text-xs text-faint">/ 10</span>
                 </span>
               </div>

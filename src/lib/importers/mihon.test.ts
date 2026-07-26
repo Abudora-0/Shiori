@@ -8,7 +8,7 @@ describe("guessKind", () => {
   });
 
   it("does not treat mixed Korean sites as adult without an explicit tag", () => {
-    // Toonily/Hiperdex/NewToki host plenty of ordinary manhwa — regression
+    // Toonily/Hiperdex/NewToki host plenty of ordinary manhwa - regression
     // guard for the false-positive bug reported against the Pornhwa shelf.
     expect(guessKind(["Action", "Gore", "Mature"], "Toonily")).toBe("MANHWA");
     expect(guessKind(["Romance"], "Hiperdex")).toBe("MANHWA");

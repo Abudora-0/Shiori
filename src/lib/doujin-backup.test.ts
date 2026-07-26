@@ -7,7 +7,7 @@ describe("detect (Mihon backup doujin source detection)", () => {
       source: "nhentai",
       id: "123456",
     });
-    // no source name at all — URL shape alone is enough for nhentai
+    // no source name at all - URL shape alone is enough for nhentai
     expect(detect("/g/123456/", undefined)).toEqual({
       source: "nhentai",
       id: "123456",
@@ -30,7 +30,7 @@ describe("detect (Mihon backup doujin source detection)", () => {
       source: "hitomi",
       id: "1234",
     });
-    // same shape, unrelated source — must not be misdetected as hitomi
+    // same shape, unrelated source - must not be misdetected as hitomi
     expect(detect("/manga/some-title-1234.html", "SomeOtherSite")).toBeNull();
   });
 

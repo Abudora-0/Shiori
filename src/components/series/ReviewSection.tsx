@@ -27,7 +27,7 @@ export function ReviewSection({ seriesId }: { seriesId: number }) {
 
       {!reviews?.length ? (
         <p className="rounded-xl border border-dashed border-line-strong px-4 py-6 text-center text-sm text-faint">
-          No reviews yet — what did you think of it?
+          No reviews yet - what did you think of it?
         </p>
       ) : (
         <div className="space-y-4">

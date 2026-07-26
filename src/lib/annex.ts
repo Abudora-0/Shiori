@@ -1,7 +1,7 @@
 import { getSetting, setSetting } from "./db";
 
 /**
- * Annex (別館) gate — a local PIN, not real security: it keeps the doujin
+ * Annex (別館) gate - a local PIN, not real security: it keeps the doujin
  * shelf out of casual sight on a personal machine. The PIN is stored as a
  * SHA-256 hash in IndexedDB; unlock state lives in sessionStorage so it
  * resets when the browser closes.
@@ -44,7 +44,7 @@ export function markUnlocked(): void {
   try {
     sessionStorage.setItem(UNLOCK_KEY, "1");
   } catch {
-    /* private mode — unlock just won't persist across navigations */
+    /* private mode - unlock just won't persist across navigations */
   }
 }
 

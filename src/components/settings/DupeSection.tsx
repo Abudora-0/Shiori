@@ -31,7 +31,7 @@ export function DupeSection() {
           <h2 className="font-display text-lg font-semibold">Duplicate finder</h2>
           <p className="mt-1.5 text-xs leading-relaxed text-muted">
             Finds entries with identical titles (usually a Mihon local copy next to
-            its AniList version) and merges them — best progress wins, your rating,
+            its AniList version) and merges them - best progress wins, your rating,
             reviews, notes and list memberships all carry over.
           </p>
         </div>

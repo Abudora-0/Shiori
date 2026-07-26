@@ -16,7 +16,7 @@ import {
 } from "@/lib/format";
 import type { EntryStatus, MediaKind } from "@/lib/types";
 
-/** Global edit modal — driven by useUiStore.editSeriesId. Mounted once in each page that needs it. */
+/** Global edit modal - driven by useUiStore.editSeriesId. Mounted once in each page that needs it. */
 export function EditEntryModal() {
   const seriesId = useUiStore((s) => s.editSeriesId);
   const close = useUiStore((s) => s.closeEdit);
@@ -169,7 +169,7 @@ export function EditEntryModal() {
             <label className="mb-2 flex items-baseline justify-between text-xs font-semibold uppercase tracking-widest text-faint">
               <span>Rating</span>
               <span className="font-display text-xl normal-case tracking-normal text-gold">
-                {rating > 0 ? rating.toFixed(1).replace(/\.0$/, "") : "—"}
+                {rating > 0 ? rating.toFixed(1).replace(/\.0$/, "") : "-"}
                 <span className="ml-1 text-xs text-faint">/ 10</span>
               </span>
             </label>
@@ -184,7 +184,7 @@ export function EditEntryModal() {
             />
           </div>
 
-          {/* Type override — imports use heuristics, fix mistakes here */}
+          {/* Type override - imports use heuristics, fix mistakes here */}
           <div>
             <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-faint">
               Type

@@ -37,7 +37,7 @@ export async function upsertDoujin(
   return "added";
 }
 
-/* ————— nhentai ————— */
+/* ----- nhentai ----- */
 
 interface NhGallery {
   id: number;
@@ -64,7 +64,7 @@ export async function fetchNhentaiGallery(
   if (res.status === 404) throw new Error(`nhentai gallery #${id} not found.`);
   if (!res.ok)
     throw new Error(
-      `nhentai returned ${res.status} — Cloudflare may be blocking; paste fresh cookies in the Annex.`
+      `nhentai returned ${res.status} - Cloudflare may be blocking; paste fresh cookies in the Annex.`
     );
   const g = (await res.json()) as NhGallery;
   const byType = (type: string) =>
@@ -113,12 +113,12 @@ export async function importNhentaiFavorites(
     });
     if (!res.ok)
       throw new Error(
-        `Favorites page returned ${res.status} — check that your cookies are fresh (sessionid + cf_clearance).`
+        `Favorites page returned ${res.status} - check that your cookies are fresh (sessionid + cf_clearance).`
       );
     const doc = parser.parseFromString(await res.text(), "text/html");
 
     if (page === 1 && doc.querySelector("form[action*='login'], input[name='password']")) {
-      throw new Error("nhentai served the login page — your sessionid cookie is missing or expired.");
+      throw new Error("nhentai served the login page - your sessionid cookie is missing or expired.");
     }
 
     const links = [...doc.querySelectorAll(".gallery a.cover")]
@@ -130,7 +130,7 @@ export async function importNhentaiFavorites(
     await sleep(400);
   }
   if (ids.length === 0)
-    throw new Error("No favorites found — empty list, or nhentai blocked the request.");
+    throw new Error("No favorites found - empty list, or nhentai blocked the request.");
 
   const result: DoujinImportResult = { added: 0, updated: 0, failed: 0 };
   for (let i = 0; i < ids.length; i++) {
@@ -147,7 +147,7 @@ export async function importNhentaiFavorites(
   return result;
 }
 
-/* ————— Add by URL (nhentai / hentaifox / hitomi) ————— */
+/* ----- Add by URL (nhentai / hentaifox / hitomi) ----- */
 
 export function parseDoujinUrl(
   input: string
@@ -172,7 +172,7 @@ export async function addDoujinByUrl(
   const parsed = parseDoujinUrl(input);
   if (!parsed)
     throw new Error(
-      "Unrecognized link — paste an nhentai, HentaiFox, HentaiEra or Hitomi gallery URL (or a bare nhentai id)."
+      "Unrecognized link - paste an nhentai, HentaiFox, HentaiEra or Hitomi gallery URL (or a bare nhentai id)."
     );
 
   let meta: Omit<DoujinEntry, "id" | "addedAt" | "favorite">;

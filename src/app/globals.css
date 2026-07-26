@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* ————— Midnight Ink (夜の墨) design tokens ————— */
+/* ----- Midnight Ink (夜の墨) design tokens ----- */
 :root {
   --ink-950: #0b0b12;
   --ink-900: #10101a;
@@ -30,7 +30,7 @@
   --watermark-stroke: rgba(233, 230, 223, 0.06);
 }
 
-/* ═════ Theme: Washi Paper (紙) — warm daylight study, hanko red, serif ═════ */
+/* ═════ Theme: Washi Paper (紙) - warm daylight study, hanko red, serif ═════ */
 [data-theme="washi"] {
   --ink-950: #f4efe4;
   --ink-900: #ede7d8;
@@ -67,7 +67,7 @@ html[data-theme="washi"] {
   box-shadow: 0 10px 26px rgba(43, 38, 32, 0.2), var(--glow-vermillion);
 }
 
-/* ═════ Theme: Manga Panel (漫) — stark B/W print: square corners, thick
+/* ═════ Theme: Manga Panel (漫) - stark B/W print: square corners, thick
    rules, halftone screen, hard offset shadows, shouty gothic headings ═════ */
 [data-theme="panel"] {
   --ink-950: #ffffff;
@@ -119,7 +119,7 @@ html[data-theme="panel"] {
   transform: translate(-2px, -2px);
 }
 
-/* ═════ Theme: Sakura Dream (桜) — pastel pink haze, extra-soft shapes ═════ */
+/* ═════ Theme: Sakura Dream (桜) - pastel pink haze, extra-soft shapes ═════ */
 [data-theme="sakura"] {
   --ink-950: #fdf2f5;
   --ink-900: #fbe9ee;
@@ -162,7 +162,7 @@ html[data-theme="sakura"] {
   box-shadow: 0 14px 34px rgba(230, 73, 128, 0.22), var(--glow-vermillion);
 }
 
-/* ═════ Theme: Neon Tokyo (電) — cyberpunk night: cyan/magenta neon,
+/* ═════ Theme: Neon Tokyo (電) - cyberpunk night: cyan/magenta neon,
    gothic type, scanlines, electric borders ═════ */
 [data-theme="neon"] {
   --ink-950: #05060f;
@@ -210,7 +210,7 @@ html[data-theme="neon"] {
   box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
 }
 
-/* ═════ Theme: Zen Garden (庭) — deep moss green, sand & gold, unhurried ═════ */
+/* ═════ Theme: Zen Garden (庭) - deep moss green, sand & gold, unhurried ═════ */
 [data-theme="zen"] {
   --ink-950: #101510;
   --ink-900: #151b14;
@@ -306,7 +306,7 @@ body {
   background: transparent;
 }
 
-/* ————— Signature utilities ————— */
+/* ----- Signature utilities ----- */
 
 /* Paper-grain noise overlay applied to the whole app */
 .noise-overlay {
@@ -373,7 +373,7 @@ body {
   border-color: rgba(230, 57, 70, 0.55);
 }
 
-/* Torii divider — thin vermillion rule with a thicker cap */
+/* Torii divider - thin vermillion rule with a thicker cap */
 .torii-rule {
   height: 2px;
   background: linear-gradient(90deg, var(--vermillion), transparent);

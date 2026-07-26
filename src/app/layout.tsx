@@ -24,9 +24,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Shiori 栞 — Anime & Manga Tracker",
+  title: "Shiori 栞 - Anime & Manga Tracker",
   description:
-    "Local-first tracker for anime, manga, manhwa and manhua — imports from AniList, MyAnimeList and more.",
+    "Local-first tracker for anime, manga, manhwa and manhua - imports from AniList, MyAnimeList and more.",
 };
 
 export const viewport: Viewport = {

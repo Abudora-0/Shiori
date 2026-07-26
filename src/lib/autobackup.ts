@@ -4,7 +4,7 @@ import { exportBackup } from "./backup";
 /**
  * Automatic backups via the File System Access API: the user picks a folder
  * once, we keep the handle in IndexedDB, and on app start (at most once per
- * ~20h) write shiori-auto-backup.json there. Not supported everywhere —
+ * ~20h) write shiori-auto-backup.json there. Not supported everywhere -
  * Brave ships with showDirectoryPicker disabled.
  */
 
@@ -56,7 +56,7 @@ async function writeBackup(handle: any): Promise<void> {
   await writable.close();
 }
 
-/** Called on app start — silently skips unless due and permission persists. */
+/** Called on app start - silently skips unless due and permission persists. */
 export async function runAutoBackupIfDue(): Promise<void> {
   try {
     if (!autoBackupSupported()) return;

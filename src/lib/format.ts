@@ -99,7 +99,7 @@ export const ALL_KINDS: MediaKind[] = [
 
 /** Internal 0–100 rating → "8.5" style 10-point string. */
 export function formatRating(rating?: number): string {
-  if (rating == null || rating <= 0) return "—";
+  if (rating == null || rating <= 0) return "-";
   return (Math.round(rating / 5) * 5 / 10).toFixed(1).replace(/\.0$/, "");
 }
 
@@ -127,9 +127,9 @@ export function stripHtml(html?: string): string {
 }
 
 export function formatDate(ts?: number | string): string {
-  if (!ts) return "—";
+  if (!ts) return "-";
   const d = typeof ts === "string" ? new Date(ts) : new Date(ts);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "-";
   return d.toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",

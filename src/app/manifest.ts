@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Shiori — Anime & Manga Tracker",
+    name: "Shiori - Anime & Manga Tracker",
     short_name: "Shiori",
     description:
       "Local-first tracker for anime, manga, manhwa and manhua.",

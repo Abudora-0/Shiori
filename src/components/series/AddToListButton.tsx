@@ -9,7 +9,7 @@ import { db, logActivity } from "@/lib/db";
 export function AddToListButton({ seriesId }: { seriesId: number }) {
   const [open, setOpen] = useState(false);
   const [newName, setNewName] = useState("");
-  // Smart lists compute their own membership — only manual lists are pickable
+  // Smart lists compute their own membership - only manual lists are pickable
   const lists = useLiveQuery(
     async () =>
       (await db.lists.orderBy("updatedAt").reverse().toArray()).filter(
@@ -63,7 +63,7 @@ export function AddToListButton({ seriesId }: { seriesId: number }) {
       <Modal open={open} onClose={() => setOpen(false)} title="Add to list">
         <div className="space-y-3">
           {!lists?.length && (
-            <p className="text-sm text-muted">No lists yet — create your first below.</p>
+            <p className="text-sm text-muted">No lists yet - create your first below.</p>
           )}
           {lists?.map((list) => {
             const checked = list.seriesIds.includes(seriesId);

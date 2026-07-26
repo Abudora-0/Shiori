@@ -7,7 +7,7 @@ import { displayTitle, KIND_LABEL } from "@/lib/format";
 import { Cover } from "@/components/ui/Cover";
 import type { Series } from "@/lib/types";
 
-/** Result card with add-to-library — used by Search and Discover. */
+/** Result card with add-to-library - used by Search and Discover. */
 export function SeriesResultCard({
   series,
   inLibrary,

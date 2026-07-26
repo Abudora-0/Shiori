@@ -54,7 +54,7 @@ export function CoverCard({ item }: { item: LibraryItem }) {
   }
 
   return (
-    /* content-visibility keeps offscreen cards unpainted — big scroll win */
+    /* content-visibility keeps offscreen cards unpainted - big scroll win */
     <div className="[content-visibility:auto] [contain-intrinsic-size:auto_300px]">
       <Link href={`/series/${series.id}`} className="group block">
         <div

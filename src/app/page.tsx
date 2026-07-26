@@ -162,7 +162,7 @@ function Welcome() {
           Welcome to Shiori
         </h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
-          <span className="font-display text-sakura">栞 (shiori)</span> — a bookmark.
+          <span className="font-display text-sakura">栞 (shiori)</span> - a bookmark.
           Import your lists from AniList or MyAnimeList and keep every anime, manga,
           manhwa and manhua in one beautifully dark shelf. Everything stays on your
           device.

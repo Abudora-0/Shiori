@@ -6,7 +6,7 @@ const TOKEN_URL = "https://anilist.co/api/v2/oauth/token";
  * Exchanges an AniList OAuth authorization code for an access token.
  * Runs server-side so the client secret never has to travel further than
  * this machine's own Next.js server (this is a local-first, single-user
- * app — there's no multi-tenant secret-leak concern, but keeping the
+ * app - there's no multi-tenant secret-leak concern, but keeping the
  * exchange server-side is still the correct shape for this flow).
  */
 export async function POST(req: NextRequest) {

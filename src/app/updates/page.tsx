@@ -39,7 +39,7 @@ export default function UpdatesPage() {
         )
       );
       setStatus(
-        `Done — ${result.checked} series checked, ${result.withNew} have new chapters` +
+        `Done - ${result.checked} series checked, ${result.withNew} have new chapters` +
           (result.failed ? `, ${result.failed} failed` : "") +
           "."
       );
@@ -94,7 +94,7 @@ export default function UpdatesPage() {
       )}
       {running && (
         <p className="mb-6 text-xs text-faint">
-          Each series takes a few seconds — leave this tab open; results appear
+          Each series takes a few seconds - leave this tab open; results appear
           below as they land.
         </p>
       )}
@@ -104,7 +104,7 @@ export default function UpdatesPage() {
           <BellRing size={40} className="text-ink-600" />
           <p className="mt-4 max-w-sm text-sm text-muted">
             {lastChecked
-              ? "All caught up — nothing new since the last check."
+              ? "All caught up - nothing new since the last check."
               : "Run a check to see which of your reading series have new chapters."}
           </p>
         </div>

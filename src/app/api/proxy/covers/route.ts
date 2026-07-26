@@ -4,7 +4,7 @@ import * as cheerio from "cheerio";
 /**
  * Cover hunter for scanlation aggregators without APIs. Each site config
  * declares a search URL and selectors; we grab result items, verify the name
- * loosely matches, and return the image URL. All best-effort — these sites
+ * loosely matches, and return the image URL. All best-effort - these sites
  * change markup and sit behind Cloudflare.
  */
 

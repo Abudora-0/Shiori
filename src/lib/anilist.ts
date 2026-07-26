@@ -55,7 +55,7 @@ async function doGql<T>(
         body: JSON.stringify({ query, variables }),
       });
     } catch {
-      // Network/CORS failure — almost always AniList rate-limiting without
+      // Network/CORS failure - almost always AniList rate-limiting without
       // CORS headers. Back off and retry.
       await sleep(15_000 * (attempt + 1));
       continue;
@@ -73,11 +73,11 @@ async function doGql<T>(
     return json.data as T;
   }
   throw new Error(
-    "AniList is rate-limiting right now — wait a minute and try again (progress you already imported is saved)."
+    "AniList is rate-limiting right now - wait a minute and try again (progress you already imported is saved)."
   );
 }
 
-/* ————— Shared media fragment & mapping ————— */
+/* ----- Shared media fragment & mapping ----- */
 
 export const MEDIA_FIELDS = `
   id
@@ -176,7 +176,7 @@ export function mapMediaToSeries(m: RawMedia): Series {
   };
 }
 
-/* ————— User list import ————— */
+/* ----- User list import ----- */
 
 const LIST_QUERY = `
 query ($userName: String, $type: MediaType) {
@@ -274,7 +274,7 @@ export async function fetchAniListUserList(
   return items;
 }
 
-/* ————— Per-series detail (characters / relations / recommendations) ————— */
+/* ----- Per-series detail (characters / relations / recommendations) ----- */
 
 const DETAIL_QUERY = `
 query ($id: Int) {
@@ -407,7 +407,7 @@ export async function fetchSeriesExtra(id: number): Promise<SeriesExtra> {
   return { seriesId: m.id, characters, relations, recommendations, cachedAt: Date.now() };
 }
 
-/* ————— Search ————— */
+/* ----- Search ----- */
 
 export async function searchAniList(
   search: string,

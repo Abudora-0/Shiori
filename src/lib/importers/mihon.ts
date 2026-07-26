@@ -9,7 +9,7 @@ import { localFallbackId } from "../ids";
 /**
  * Mihon / Tachiyomi-fork backup importer.
  * .tachibk / .proto.gz files are gzipped protobuf. We decode only the fields
- * we need (proto2 syntax so presence of `favorite` is detectable — Mihon
+ * we need (proto2 syntax so presence of `favorite` is detectable - Mihon
  * defaults it to true and may omit it on the wire).
  *
  * Tracker syncIds: 1 = MyAnimeList, 2 = AniList, 3 = Kitsu.
@@ -120,7 +120,7 @@ export function parseMihonBackup(buffer: ArrayBuffer | Uint8Array): ParsedBackup
 }
 
 /**
- * Extension names that host ONLY adult manhwa — safe to classify on name
+ * Extension names that host ONLY adult manhwa - safe to classify on name
  * alone. Mixed sites (Toonily, Hiperdex, ManhwaClan, NewToki…) carry plenty
  * of ordinary manhwa, so they only count as a "Korean" hint and still need
  * an adult genre tag to become Pornhwa.
@@ -136,7 +136,7 @@ export function guessKind(genres: string[], sourceName?: string): MediaKind {
   const korean =
     g.some((x) => x.includes("manhwa") || x.includes("webtoon")) ||
     (!!sourceName && KOREAN_SOURCES.test(sourceName));
-  // "mature"/"gore" are common on ordinary action manhwa — not adult markers
+  // "mature"/"gore" are common on ordinary action manhwa - not adult markers
   const adult = g.some(
     (x) =>
       x.includes("adult") ||

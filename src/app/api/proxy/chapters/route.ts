@@ -65,7 +65,7 @@ function absolute(href: string | undefined, base: string): string | undefined {
   return href;
 }
 
-/* ————— MangaKatana ————— */
+/* ----- MangaKatana ----- */
 
 async function mangakatana(title: string) {
   const base = "https://mangakatana.com";
@@ -109,7 +109,7 @@ async function mangakatana(title: string) {
   return chapters.length ? { name: name || title, chapters } : null;
 }
 
-/* ————— MangaBuddy family (KaliScan, Kagane fallback shape) ————— */
+/* ----- MangaBuddy family (KaliScan, Kagane fallback shape) ----- */
 
 async function buddySite(base: string, title: string) {
   const searchHtml = await fetchHtml(
@@ -157,7 +157,7 @@ async function buddySite(base: string, title: string) {
   return chapters.length ? { name, chapters } : null;
 }
 
-/* ————— WeebCentral ————— */
+/* ----- WeebCentral ----- */
 
 async function weebcentral(title: string) {
   const base = "https://weebcentral.com";
@@ -206,7 +206,7 @@ async function weebcentral(title: string) {
   return chapters.length ? { name, chapters } : null;
 }
 
-/* ————— Kagane ————— */
+/* ----- Kagane ----- */
 
 async function kagane(title: string) {
   const base = "https://kagane.org";
@@ -250,7 +250,7 @@ async function kagane(title: string) {
   return chapters.length ? { name, chapters } : null;
 }
 
-/* ————— Route ————— */
+/* ----- Route ----- */
 
 export async function GET(req: NextRequest) {
   const site = req.nextUrl.searchParams.get("site") ?? "";

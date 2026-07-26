@@ -63,7 +63,7 @@ export function looksKorean(genres: string[]): boolean {
   return genres.some((g) => KOREAN_GENRES.test(g));
 }
 
-/* ————— Cover repair ————— */
+/* ----- Cover repair ----- */
 
 const NET_TIMEOUT = 10_000;
 
@@ -180,7 +180,7 @@ export interface CoverFixResult {
   failed: number;
 }
 
-/** CDNs that reliably serve us — no need to probe those. */
+/** CDNs that reliably serve us - no need to probe those. */
 const TRUSTED_COVER_HOSTS =
   /anilist\.co|myanimelist\.net|kitsu\.(?:io|app)|mangadex\.org|comick\.pictures|anime-planet\.com|mangakatana|weebcentral|mangafire|kagane/i;
 
@@ -211,7 +211,7 @@ export async function fixMissingCovers(
   const all = await db.series.toArray();
 
   // Coverless series are targets immediately; untrusted cover URLs (Mihon
-  // source thumbnails etc.) are probed in the browser — dead ones become
+  // source thumbnails etc.) are probed in the browser - dead ones become
   // targets too, since that's exactly what the user sees as a blank card.
   const targets = all.filter((s) => !s.cover);
   const toProbe = all.filter((s) => s.cover && !TRUSTED_COVER_HOSTS.test(s.cover));
@@ -243,7 +243,7 @@ export async function fixMissingCovers(
       fixed: result.fixed,
     });
     // Multiple title variants only pay off against exact-match APIs
-    // (MangaDex/Anime-Planet) — decoration in the title is exactly what
+    // (MangaDex/Anime-Planet) - decoration in the title is exactly what
     // trips those up. The 10+ scrape-site fallback chain already does its
     // own fuzzy matching server-side, so retrying it per variant would
     // multiply an already-long chain by 3x for little extra benefit; it
@@ -257,7 +257,7 @@ export async function fixMissingCovers(
         /* provider down */
       }
       if (!cover && s.kind !== "PORNHWA") {
-        // Anime-Planet doesn't carry pornhwa — skip the wasted request
+        // Anime-Planet doesn't carry pornhwa - skip the wasted request
         try {
           cover = await coverFromAnimePlanet(title, s.kind);
         } catch {
@@ -267,7 +267,7 @@ export async function fixMissingCovers(
     }
     if (!cover) {
       const title = variants[0];
-      // Scanlation aggregators — often the only places carrying pornhwa covers
+      // Scanlation aggregators - often the only places carrying pornhwa covers
       for (const site of scrapeOrder(s.kind)) {
         if (cover) break;
         try {
@@ -276,7 +276,7 @@ export async function fixMissingCovers(
           /* provider down */
         }
       }
-      // Comick last — region-blocked for some users without a VPN
+      // Comick last - region-blocked for some users without a VPN
       if (!cover) {
         try {
           cover = await coverFromComick(title);
@@ -296,7 +296,7 @@ export async function fixMissingCovers(
   return result;
 }
 
-/* ————— Type re-classification (Pornhwa) ————— */
+/* ----- Type re-classification (Pornhwa) ----- */
 
 export interface ReclassifyProgress {
   phase: "anilist" | "local";
@@ -355,7 +355,7 @@ export async function reclassifyLibrary(
       result.pornhwa++;
     } else if (!adult && s.kind === "PORNHWA") {
       // Over-eager earlier classification (e.g. mixed sites like Toonily,
-      // Hiperdex, NewToki) — send it back to Manhwa
+      // Hiperdex, NewToki) - send it back to Manhwa
       toPut.push({ ...s, kind: "MANHWA" });
       result.updated++;
     }

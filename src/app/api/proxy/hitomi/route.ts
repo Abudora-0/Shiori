@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * Hitomi gallery info — their per-gallery metadata lives in a JS file
+ * Hitomi gallery info - their per-gallery metadata lives in a JS file
  * (`var galleryinfo = {...}`). Hitomi has moved CDN domains before, so we
  * try both known hosts. Covers are skipped: hitomi thumbnail URLs require
  * their rotating hash scheme.
@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
   };
   try {
     // The response is a JS statement (`var galleryinfo = {...};`), not bare
-    // JSON — strip the trailing semicolon or JSON.parse throws on every call.
+    // JSON - strip the trailing semicolon or JSON.parse throws on every call.
     info = JSON.parse(text.slice(eq + 1).trim().replace(/;\s*$/, ""));
   } catch {
     return NextResponse.json({ error: "Couldn't parse galleryinfo." }, { status: 502 });

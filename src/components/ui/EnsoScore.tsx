@@ -20,7 +20,7 @@ export function EnsoScore({
   const maxArc = circumference * 0.92;
   const arc = maxArc * pct;
   const display =
-    score && score > 0 ? (score / 10).toFixed(1).replace(/\.0$/, "") : "—";
+    score && score > 0 ? (score / 10).toFixed(1).replace(/\.0$/, "") : "-";
 
   return (
     <div

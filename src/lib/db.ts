@@ -40,7 +40,7 @@ db.version(2).stores({
   activity: "date",
 });
 
-// v3: the Novel category was removed — fold existing entries into Manga
+// v3: the Novel category was removed - fold existing entries into Manga
 db.version(3).upgrade(async (tx) => {
   await tx
     .table("series")
@@ -55,7 +55,7 @@ db.version(4).stores({
   updates: "seriesId, checkedAt",
 });
 
-/** Bump today's activity counter — call on any library write worth counting. */
+/** Bump today's activity counter - call on any library write worth counting. */
 export async function logActivity(amount = 1): Promise<void> {
   const now = new Date();
   const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;

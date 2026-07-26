@@ -14,7 +14,7 @@ type TypeFilter = "ALL" | "ANIME" | "MANGA";
 
 /** Reads the ?q= param once on mount. Isolated + Suspense-wrapped so a bare
  * useSearchParams() read can't gate hydration of the whole page (that left
- * this route blank on a hard navigation — see settings/page.tsx's
+ * this route blank on a hard navigation - see settings/page.tsx's
  * OAuthCallbackHandler for the same pattern). */
 function InitialQueryReader({ onQuery }: { onQuery: (q: string) => void }) {
   const q = useSearchParams().get("q") ?? "";
@@ -96,7 +96,7 @@ export default function SearchPage() {
         <CardGridSkeleton count={10} />
       ) : isError ? (
         <p className="py-16 text-center text-vermillion-bright">
-          Search failed — AniList may be rate-limiting. Try again shortly.
+          Search failed - AniList may be rate-limiting. Try again shortly.
         </p>
       ) : !data?.length ? (
         <p className="py-16 text-center text-muted">No results for “{query}”.</p>

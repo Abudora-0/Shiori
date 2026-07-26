@@ -4,7 +4,7 @@ import * as cheerio from "cheerio";
 /**
  * Anime-Planet series info scraper (no API exists). Given a title, finds the
  * best-matching series page and extracts Anime-Planet-specific data: their
- * community rating, tags and content warnings. Best-effort — markup changes
+ * community rating, tags and content warnings. Best-effort - markup changes
  * or Cloudflare may break it.
  */
 

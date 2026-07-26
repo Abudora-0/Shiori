@@ -6,7 +6,7 @@ import { displayTitle } from "./format";
  * MangaKatana, KaliScan, WeebCentral and Kagane are queried in parallel and
  * the site returning the most chapters wins ("most consistency").
  * MangaUpdates release lists remain as a last-resort fallback.
- * (MangaDex/Comick were dropped by user request — Comick is region-blocked.)
+ * (MangaDex/Comick were dropped by user request - Comick is region-blocked.)
  */
 
 export interface ChapterInfo {
@@ -99,7 +99,7 @@ export async function fetchChapters(series: Series): Promise<ChapterResult | nul
   }
 }
 
-/* ————— MangaUpdates (release lists, fallback) ————— */
+/* ----- MangaUpdates (release lists, fallback) ----- */
 
 async function fromMangaUpdates(series: Series): Promise<ChapterResult | null> {
   const title = displayTitle(series.title);

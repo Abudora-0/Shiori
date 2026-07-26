@@ -5,7 +5,7 @@ const NH = "https://nhentai.net";
 /**
  * nhentai proxy. The site sits behind Cloudflare; the user's own browser
  * cookies (sessionid + cf_clearance, pasted in the Annex) are forwarded so
- * favorites pages resolve. Best-effort — Cloudflare may still challenge.
+ * favorites pages resolve. Best-effort - Cloudflare may still challenge.
  */
 export async function GET(
   req: NextRequest,

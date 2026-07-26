@@ -8,7 +8,7 @@ const MONTHS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 
 /**
  * Yearly wrap-up: completions, taste vs community, monthly rhythm.
- * Takes `items` from the parent instead of its own useLibrary() call —
+ * Takes `items` from the parent instead of its own useLibrary() call -
  * this is always mounted alongside the Stats page's own library query, so a
  * second live subscription here would double the re-scan work on every
  * library write while the page is open.
@@ -104,7 +104,7 @@ export function YearReview({ items }: { items: LibraryItem[] | undefined }) {
             ))}
             <Row
               label="Your mean score"
-              value={s.mean ? s.mean.toFixed(2) : "—"}
+              value={s.mean ? s.mean.toFixed(2) : "-"}
             />
             {s.vsCommunity != null && (
               <Row
@@ -118,7 +118,7 @@ export function YearReview({ items }: { items: LibraryItem[] | undefined }) {
               <Row
                 label="Highest rated"
                 value={`${
-                  s.best.series.title.english ?? s.best.series.title.romaji ?? "—"
+                  s.best.series.title.english ?? s.best.series.title.romaji ?? "-"
                 } (${(s.best.entry.rating! / 10).toFixed(1)})`}
               />
             )}

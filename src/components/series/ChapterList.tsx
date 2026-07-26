@@ -71,7 +71,7 @@ export function ChapterList({ series }: { series: Series }) {
             </div>
           ) : !data ? (
             <p className="rounded-xl border border-dashed border-line-strong px-4 py-5 text-center text-sm text-faint">
-              No chapter source found for this series — tried MangaKatana,
+              No chapter source found for this series - tried MangaKatana,
               KaliScan, WeebCentral, Kagane and MangaUpdates.
             </p>
           ) : (

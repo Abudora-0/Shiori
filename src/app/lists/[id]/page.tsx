@@ -22,7 +22,7 @@ export default function ListDetailPage() {
       Number.isFinite(id) ? ((await db.lists.get(id)) ?? null) : null,
     [id]
   );
-  // Only smart lists need the full library join — skip it for manual lists
+  // Only smart lists need the full library join - skip it for manual lists
   const library = useLibrary(list === undefined || !!list?.smart);
   const manualItems = useLiveQuery(async () => {
     if (!list || list.smart) return undefined;
@@ -159,7 +159,7 @@ export default function ListDetailPage() {
         <div className="flex flex-col items-center py-16 text-center">
           <div className="font-display text-6xl text-ink-600">空</div>
           <p className="mt-4 text-sm text-muted">
-            Empty list — open any series page and use &quot;Add to list&quot;.
+            Empty list - open any series page and use &quot;Add to list&quot;.
           </p>
         </div>
       ) : (

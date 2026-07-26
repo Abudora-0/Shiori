@@ -13,7 +13,7 @@ export interface LibraryItem {
  * Full library joined: every entry with its series metadata.
  *
  * Pass `enabled: false` to skip the query entirely (e.g. a hidden panel that
- * hasn't been opened yet) — when the querier doesn't touch any table, Dexie's
+ * hasn't been opened yet) - when the querier doesn't touch any table, Dexie's
  * liveQuery has nothing to observe, so it won't re-run on unrelated writes
  * elsewhere in the app. Flip back to `true` to resume live results.
  *
@@ -70,7 +70,7 @@ export function useNotes(seriesId: number) {
   );
 }
 
-/** Set of seriesIds present in the library — used to badge "similar" cards. */
+/** Set of seriesIds present in the library - used to badge "similar" cards. */
 export function useLibraryIds(): Set<number> | undefined {
   return useLiveQuery(async () => {
     const keys = await db.entries.toCollection().primaryKeys();

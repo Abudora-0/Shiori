@@ -64,7 +64,7 @@ export default function ImportPage() {
   );
 }
 
-/* ————— Shared bits ————— */
+/* ----- Shared bits ----- */
 
 function StatusLine({ run }: { run: RunState }) {
   if (run.phase === "idle") return null;
@@ -86,7 +86,7 @@ function StatusLine({ run }: { run: RunState }) {
         {run.result && (
           <div className="mt-1 text-xs text-muted">
             {run.result.total} fetched · {run.result.added} added ·{" "}
-            {run.result.updated} updated · {run.result.skipped} kept as-is —{" "}
+            {run.result.updated} updated · {run.result.skipped} kept as-is -{" "}
             <Link href="/library" className="text-sakura underline">
               open library
             </Link>
@@ -159,7 +159,7 @@ function UsernameRow({
   );
 }
 
-/* ————— AniList ————— */
+/* ----- AniList ----- */
 
 function AniListCard({ strategy }: { strategy: MergeStrategy }) {
   const [username, setUsername] = useState("");
@@ -196,7 +196,7 @@ function AniListCard({ strategy }: { strategy: MergeStrategy }) {
   return (
     <CardShell
       name="AniList"
-      note="Public profile — anime + manga, no login needed."
+      note="Public profile - anime + manga, no login needed."
       badge="GraphQL API"
       badgeClass="bg-[#152238] text-[#3db4f2]"
     >
@@ -212,7 +212,7 @@ function AniListCard({ strategy }: { strategy: MergeStrategy }) {
   );
 }
 
-/* ————— MyAnimeList ————— */
+/* ----- MyAnimeList ----- */
 
 function MalCard({ strategy }: { strategy: MergeStrategy }) {
   const [username, setUsername] = useState("");
@@ -264,7 +264,7 @@ function MalCard({ strategy }: { strategy: MergeStrategy }) {
   return (
     <CardShell
       name="MyAnimeList"
-      note="Public list via the official API — needs a free Client ID."
+      note="Public list via the official API - needs a free Client ID."
       badge="Official API"
       badgeClass="bg-[#2e51a2]/25 text-[#7da2e3]"
     >
@@ -274,7 +274,7 @@ function MalCard({ strategy }: { strategy: MergeStrategy }) {
           <Link href="/settings" className="text-gold underline">
             Settings
           </Link>{" "}
-          first — register one free at{" "}
+          first - register one free at{" "}
           <span className="text-text">myanimelist.net/apiconfig</span> (choose
           &quot;other&quot; app type).
         </div>
@@ -292,7 +292,7 @@ function MalCard({ strategy }: { strategy: MergeStrategy }) {
   );
 }
 
-/* ————— Kitsu ————— */
+/* ----- Kitsu ----- */
 
 function KitsuCard({ strategy }: { strategy: MergeStrategy }) {
   const [username, setUsername] = useState("");
@@ -342,7 +342,7 @@ function KitsuCard({ strategy }: { strategy: MergeStrategy }) {
   return (
     <CardShell
       name="Kitsu"
-      note="Public library via the Kitsu API — username or profile slug."
+      note="Public library via the Kitsu API - username or profile slug."
       badge="JSON:API"
       badgeClass="bg-[#3b1f2b] text-[#f75239]"
     >
@@ -358,7 +358,7 @@ function KitsuCard({ strategy }: { strategy: MergeStrategy }) {
   );
 }
 
-/* ————— Mihon backup ————— */
+/* ----- Mihon backup ----- */
 
 function MihonCard({ strategy }: { strategy: MergeStrategy }) {
   const [run, setRun] = useState<RunState>(IDLE);
@@ -404,7 +404,7 @@ function MihonCard({ strategy }: { strategy: MergeStrategy }) {
   return (
     <CardShell
       name="Mihon / Tachiyomi backup"
-      note="Upload a .tachibk or .proto.gz backup — parsed entirely in your browser."
+      note="Upload a .tachibk or .proto.gz backup - parsed entirely in your browser."
       badge=".tachibk"
       badgeClass="bg-[#2b2440] text-[#a996f2]"
     >

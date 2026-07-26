@@ -92,7 +92,7 @@ export default function DiscoverPage() {
       <KanjiHeading
         kanji="発見"
         title="Discover"
-        subtitle="What's airing, what's trending — add anything straight to your Planning shelf."
+        subtitle="What's airing, what's trending - add anything straight to your Planning shelf."
       />
 
       <div className="no-scrollbar -mx-1 mb-6 flex gap-1 overflow-x-auto border-b border-line px-1">
@@ -113,7 +113,7 @@ export default function DiscoverPage() {
         <CardGridSkeleton count={12} />
       ) : isError ? (
         <p className="py-16 text-center text-vermillion-bright">
-          AniList didn&apos;t answer — likely rate-limited, try again shortly.
+          AniList didn&apos;t answer - likely rate-limited, try again shortly.
         </p>
       ) : (
         <>

@@ -5,7 +5,7 @@ import { resolveByMalIds } from "../anilist";
 /**
  * MyAnimeList importer.
  * Public lists are readable with just a Client ID (registered free at
- * myanimelist.net/apiconfig) — no OAuth. Requests go through our
+ * myanimelist.net/apiconfig) - no OAuth. Requests go through our
  * /api/proxy/mal route to avoid CORS.
  */
 
@@ -80,7 +80,7 @@ async function fetchMalList(
     );
     if (res.status === 404) throw new Error(`MAL user "${username}" not found.`);
     if (res.status === 401 || res.status === 403)
-      throw new Error("MAL rejected the Client ID — check it in Settings.");
+      throw new Error("MAL rejected the Client ID - check it in Settings.");
     if (!res.ok) throw new Error(`MAL error (${res.status}).`);
     const json = await res.json();
     items.push(...(json.data ?? []));

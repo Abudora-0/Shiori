@@ -9,14 +9,14 @@ import { useLibrary } from "@/lib/hooks";
 import { displayTitle, formatRating, KIND_LABEL, statusShort } from "@/lib/format";
 import { Cover } from "@/components/ui/Cover";
 
-/** Global quick search — Ctrl+K / Cmd+K from anywhere. */
+/** Global quick search - Ctrl+K / Cmd+K from anywhere. */
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  // Stay dormant (no DB subscription) until the palette is actually opened —
+  // Stay dormant (no DB subscription) until the palette is actually opened -
   // this is mounted globally, so an eager query here would re-run on every
   // library write anywhere in the app even while closed.
   const items = useLibrary(open);

@@ -47,7 +47,7 @@ export function Sidebar() {
       <Link
         href="/"
         className="mt-5 flex h-11 w-11 items-center justify-center rounded-full border-[5px] border-vermillion bg-paper font-display text-xl font-bold text-[#16161f] shadow-[0_0_18px_rgba(230,57,70,0.45)] transition-transform hover:scale-105"
-        title="Shiori — 栞"
+        title="Shiori - 栞"
       >
         栞
       </Link>
@@ -93,7 +93,7 @@ export function Sidebar() {
       {annexEnabled && (
         <Link
           href="/annex"
-          title="Annex — 別館"
+          title="Annex - 別館"
           className={`mb-4 flex h-11 w-11 flex-col items-center justify-center rounded-lg transition-colors ${
             pathname.startsWith("/annex")
               ? "bg-ink-700 text-vermillion-bright"

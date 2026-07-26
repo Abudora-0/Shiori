@@ -4,7 +4,7 @@ import { resolveByAniListIds, resolveByMalIds } from "../anilist";
 import { kitsuAnimeFallbackId, kitsuMangaFallbackId } from "../ids";
 
 /**
- * Kitsu importer — public JSON:API, no auth, CORS-enabled.
+ * Kitsu importer - public JSON:API, no auth, CORS-enabled.
  * Library entries are resolved to AniList series via Kitsu's media "mappings"
  * (anilist id preferred, then MAL id); otherwise a Kitsu-only series is kept.
  */

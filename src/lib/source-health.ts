@@ -1,6 +1,6 @@
 /**
  * Diagnostic ping for every scraper-based source Shiori depends on. These
- * sites have no official API and no uptime guarantee — when one changes its
+ * sites have no official API and no uptime guarantee - when one changes its
  * markup, the corresponding scraper just quietly returns nothing. This
  * probes each site with a near-universally-carried title ("One Piece") so a
  * broken scraper shows up as a discrete red row instead of a silent gap in

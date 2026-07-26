@@ -45,7 +45,7 @@ export interface Series {
   studios?: string[];
   authors?: string[];
   countryOfOrigin?: string;
-  /** Mihon extension name for local entries — used by re-classification. */
+  /** Mihon extension name for local entries - used by re-classification. */
   sourceName?: string;
   cachedAt: number;
 }
@@ -122,7 +122,7 @@ export interface SeriesExtra {
   cachedAt: number;
 }
 
-/** Phase 3 — the Annex (別館). Doujin library entries. */
+/** Phase 3 - the Annex (別館). Doujin library entries. */
 export type DoujinSource = "nhentai" | "hentaifox" | "hentaiera" | "hitomi" | "manual";
 
 export interface DoujinEntry {
@@ -184,7 +184,7 @@ export interface UpdateCheck {
   checkedAt: number;
 }
 
-/** One row per day, incremented on every library write — feeds the heatmap. */
+/** One row per day, incremented on every library write - feeds the heatmap. */
 export interface ActivityDay {
   /** YYYY-MM-DD (local) */
   date: string;

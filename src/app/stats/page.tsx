@@ -120,7 +120,7 @@ export default function StatsPage() {
 
       {!s ? null : s.total === 0 ? (
         <p className="py-20 text-center text-muted">
-          Import or add some series first — the numbers will follow.
+          Import or add some series first - the numbers will follow.
         </p>
       ) : (
         <div className="space-y-10 pb-16">

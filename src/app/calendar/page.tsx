@@ -102,7 +102,7 @@ export default function CalendarPage() {
       <KanjiHeading
         kanji="放送"
         title="Airing calendar"
-        subtitle="When the anime on your shelf airs — past day and coming week."
+        subtitle="When the anime on your shelf airs - past day and coming week."
       />
 
       {watching && watching.size === 0 ? (

@@ -87,7 +87,7 @@ export default function SettingsPage() {
   async function onClear() {
     if (
       confirm(
-        "Delete ALL local data — library, ratings, reviews, notes? This cannot be undone. Export a backup first!"
+        "Delete ALL local data - library, ratings, reviews, notes? This cannot be undone. Export a backup first!"
       )
     ) {
       await clearAllData();
@@ -144,7 +144,7 @@ export default function SettingsPage() {
         <section className="rounded-xl border border-line bg-ink-850 p-5">
           <h2 className="font-display text-lg font-semibold">Backup &amp; restore</h2>
           <p className="mt-1.5 text-xs leading-relaxed text-muted">
-            Your library lives in this browser&apos;s IndexedDB. Export regularly —
+            Your library lives in this browser&apos;s IndexedDB. Export regularly -
             clearing browser data would erase it.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
@@ -210,7 +210,7 @@ export default function SettingsPage() {
         )}
 
         <p className="text-center text-xs text-faint">
-          栞 Shiori — a bookmark between worlds. Local-first, no accounts, no cloud.
+          栞 Shiori - a bookmark between worlds. Local-first, no accounts, no cloud.
         </p>
       </div>
     </div>
@@ -232,11 +232,11 @@ function AutoBackupRow() {
   async function enable() {
     try {
       const folder = await chooseBackupFolder();
-      setMsg(`Auto-backup enabled — wrote a backup to "${folder}" just now.`);
+      setMsg(`Auto-backup enabled - wrote a backup to "${folder}" just now.`);
       setStatus(await autoBackupStatus());
     } catch (e) {
       if ((e as Error)?.name !== "AbortError")
-        setMsg("Couldn't set up the folder — permission denied.");
+        setMsg("Couldn't set up the folder - permission denied.");
     }
   }
 
@@ -250,7 +250,7 @@ function AutoBackupRow() {
     return (
       <p className="mt-4 border-t border-line pt-4 text-xs text-faint">
         Automatic backups need the File System Access API, which this browser
-        doesn&apos;t expose (Brave disables it by default — enable it in
+        doesn&apos;t expose (Brave disables it by default - enable it in
         brave://flags, or use another Chromium browser). Manual export above works
         everywhere.
       </p>
@@ -298,7 +298,7 @@ const THEMES = [
     id: "ink",
     name: "Midnight Ink",
     kanji: "夜",
-    desc: "The original — dark indigo, vermillion glow, serif elegance.",
+    desc: "The original - dark indigo, vermillion glow, serif elegance.",
     swatches: ["#0b0b12", "#1a1a28", "#e63946", "#f4a7b9", "#d4af37"],
   },
   {
@@ -326,7 +326,7 @@ const THEMES = [
     id: "neon",
     name: "Neon Tokyo",
     kanji: "電",
-    desc: "Cyberpunk night — cyan & magenta neon, scanlines, techy gothic type.",
+    desc: "Cyberpunk night - cyan & magenta neon, scanlines, techy gothic type.",
     swatches: ["#05060f", "#131730", "#ff2d78", "#00e5ff", "#ffe14d"],
   },
   {
@@ -359,7 +359,7 @@ function ThemeSection() {
     try {
       localStorage.setItem("shiori-theme", id);
     } catch {
-      /* private mode — theme just won't persist */
+      /* private mode - theme just won't persist */
     }
     setTheme(id);
   }
@@ -428,12 +428,12 @@ function UpdatesSection() {
     await setAutoUpdateCheck(next);
     if (next && notificationsSupported() && Notification.permission === "default") {
       // Fired from this onChange handler, so it still counts as a user
-      // gesture — browsers block permission prompts without one.
+      // gesture - browsers block permission prompts without one.
       const result = await requestNotificationPermission();
       setPermission(result);
       if (result === "denied") {
         setMsg(
-          "Notifications blocked — auto-checks will still run, but you won't get an alert. You can allow notifications for this site in your browser's settings."
+          "Notifications blocked - auto-checks will still run, but you won't get an alert. You can allow notifications for this site in your browser's settings."
         );
       }
     }
@@ -544,7 +544,7 @@ function AniListSyncSection() {
       const result = await syncAllToAniList((p) =>
         setSyncState(`Pushing ${p.count}/${p.total}: ${p.current}`)
       );
-      setSyncState(`Done — ${result.pushed} pushed, ${result.failed} failed.`);
+      setSyncState(`Done - ${result.pushed} pushed, ${result.failed} failed.`);
     } catch (e) {
       setSyncState(e instanceof Error ? e.message : "Sync failed.");
     }
@@ -561,7 +561,7 @@ function AniListSyncSection() {
       </h2>
       <p className="mt-1.5 text-xs leading-relaxed text-muted">
         Push-only: sends your local status/progress/score/dates up to AniList for
-        every series linked to it. Nothing here runs automatically — Shiori never
+        every series linked to it. Nothing here runs automatically - Shiori never
         writes to your AniList account unless you click Sync. Register a free app at{" "}
         <a
           href="https://anilist.co/settings/developer"
@@ -646,8 +646,8 @@ function MaintenanceSection() {
       );
       setCoverState(
         result.scanned === 0
-          ? "All covers load fine — nothing to fix."
-          : `Done — ${result.fixed} covers replaced, ${result.failed} still missing (no source had a match).`
+          ? "All covers load fine - nothing to fix."
+          : `Done - ${result.fixed} covers replaced, ${result.failed} still missing (no source had a match).`
       );
     } catch (e) {
       setCoverState(e instanceof Error ? e.message : String(e));
@@ -667,7 +667,7 @@ function MaintenanceSection() {
         )
       );
       setTypeState(
-        `Done — ${result.updated} types changed, ${result.pornhwa} moved to Pornhwa.`
+        `Done - ${result.updated} types changed, ${result.pornhwa} moved to Pornhwa.`
       );
     } catch (e) {
       setTypeState(e instanceof Error ? e.message : String(e));
@@ -683,7 +683,7 @@ function MaintenanceSection() {
         <div>
           <div className="flex items-start justify-between gap-4">
             <p className="text-xs leading-relaxed text-muted">
-              <span className="font-semibold text-text">Fix covers</span> — tests
+              <span className="font-semibold text-text">Fix covers</span> - tests
               every stored cover for dead links, then hunts across MangaDex,
               Anime-Planet, MangaKatana, WeebCentral, MangaFire, KaliScan,
               KingofShojo, MangaK, MangaFox, MadaraDex, ManhwaBuddy, Kagane and
@@ -709,7 +709,7 @@ function MaintenanceSection() {
         <div className="border-t border-line pt-4">
           <div className="flex items-start justify-between gap-4">
             <p className="text-xs leading-relaxed text-muted">
-              <span className="font-semibold text-text">Re-classify types</span> —
+              <span className="font-semibold text-text">Re-classify types</span> -
               refreshes manga-side series from AniList (adult manhwa → Pornhwa) and
               applies adult-tag detection to local entries. Overwrites manual type
               changes on AniList-known series.
@@ -766,7 +766,7 @@ function SourceHealthSection() {
           <p className="mt-1.5 text-xs leading-relaxed text-muted">
             These scraper sites have no official API and can break silently when
             they change their markup. Pings each one with a near-universally
-            carried title (&quot;One Piece&quot;) — a red row means that source is likely
+            carried title (&quot;One Piece&quot;) - a red row means that source is likely
             down or its scraper needs fixing, not that a specific series is
             missing.
           </p>

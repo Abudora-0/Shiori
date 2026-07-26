@@ -24,7 +24,7 @@ import {
   STATUS_COLOR,
 } from "@/lib/format";
 
-/** Entries per page — small pages keep big libraries snappy. */
+/** Entries per page - small pages keep big libraries snappy. */
 const PER_PAGE = 30;
 
 const SORTS: { value: LibrarySort; label: string }[] = [

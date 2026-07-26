@@ -44,7 +44,7 @@ export function Heatmap({ data }: { data: Map<string, number> }) {
           {cells.map((c) => (
             <div
               key={c.date}
-              title={`${c.date} — ${c.count} ${c.count === 1 ? "update" : "updates"}`}
+              title={`${c.date} - ${c.count} ${c.count === 1 ? "update" : "updates"}`}
               className="h-[10px] w-[10px] rounded-[2px]"
               style={{
                 background: c.future ? "transparent" : color(c.count),

@@ -18,7 +18,7 @@ export default function ListsPage() {
     () => db.lists.orderBy("updatedAt").reverse().toArray(),
     []
   );
-  // Loaded once here and handed down — every smart list card and the smart
+  // Loaded once here and handed down - every smart list card and the smart
   // list builder need the full library, and each has its own useLibrary()
   // call otherwise: with N smart lists that's N+1 concurrent full-table
   // live-query subscriptions all re-scanning on every write anywhere in
@@ -45,7 +45,7 @@ export default function ListsPage() {
       <KanjiHeading
         kanji="選集"
         title="Lists"
-        subtitle="Curated shelves — favorites of favorites, seasonal watchlists, anything."
+        subtitle="Curated shelves - favorites of favorites, seasonal watchlists, anything."
       />
 
       <div className="mb-8 max-w-2xl">
@@ -72,7 +72,7 @@ export default function ListsPage() {
         <div className="flex flex-col items-center py-16 text-center">
           <div className="font-display text-7xl text-ink-600">選</div>
           <p className="mt-4 text-sm text-muted">
-            No lists yet — create one above, then add series from their pages.
+            No lists yet - create one above, then add series from their pages.
           </p>
         </div>
       ) : (

@@ -8,7 +8,7 @@ import type { DoujinEntry, DoujinSource } from "./types";
  * Pull doujins out of a Tachiyomi-family backup (Mihon .tachibk / .proto.gz,
  * or TachiyomiAZ-era legacy .json), keep only nhentai / HentaiFox / Hitomi
  * entries, and enrich each one with fresh metadata from its site. Regular
- * manga in the backup are ignored here — the main Import page handles those.
+ * manga in the backup are ignored here - the main Import page handles those.
  */
 
 interface DoujinCandidate {
@@ -30,7 +30,7 @@ export function detect(
   // "/g/<id>/" is nhentai's extension URL shape
   let m = /\/g\/(\d+)/.exec(u);
   if (m && (!name || name.includes("nhentai"))) return { source: "nhentai", id: m[1] };
-  // "/gallery/<id>" is shared by the IMHentai family — name disambiguates
+  // "/gallery/<id>" is shared by the IMHentai family - name disambiguates
   m = /\/gallery\/(\d+)/.exec(u);
   if (m) {
     if (name.includes("hentaiera")) return { source: "hentaiera", id: m[1] };
@@ -39,7 +39,7 @@ export function detect(
   m = /(?:galleries|manga|doujinshi|cg|gamecg|reader)\/(?:[^/]*-)?(\d+)(?:\.html)?/.exec(u);
   if (m && name.includes("hitomi")) return { source: "hitomi", id: m[1] };
 
-  // URL didn't match a known shape — fall back to the extension name + digits
+  // URL didn't match a known shape - fall back to the extension name + digits
   const digits = /(\d{3,})/.exec(u)?.[1];
   if (digits) {
     if (name.includes("nhentai")) return { source: "nhentai", id: digits };
@@ -89,10 +89,10 @@ function extractFromLegacyJson(text: string): {
     extensions?: string[];
   };
   if (!Array.isArray(json.mangas)) {
-    throw new Error("Unrecognized backup JSON — expected a Tachiyomi legacy backup.");
+    throw new Error("Unrecognized backup JSON - expected a Tachiyomi legacy backup.");
   }
 
-  // extensions: ["<sourceId>:<name>", ...] — ids can exceed 2^53, keep as string
+  // extensions: ["<sourceId>:<name>", ...] - ids can exceed 2^53, keep as string
   const sourceNames = new Map<string, string>();
   for (const ext of json.extensions ?? []) {
     const idx = ext.indexOf(":");
@@ -105,7 +105,7 @@ function extractFromLegacyJson(text: string): {
   // old Tachiyomi JSON format's positional MANGA array is not something we
   // have a verified field-by-field spec for, and guessing the wrong index
   // for "favorite" risks silently dropping doujins the user genuinely
-  // favorited — a much worse failure than importing a few extra entries
+  // favorited - a much worse failure than importing a few extra entries
   // someone can just delete from the Annex. If you hit this with a real
   // legacy backup and can confirm the flag's position, tighten this filter.
   const candidates: DoujinCandidate[] = [];
@@ -198,7 +198,7 @@ export async function importDoujinsFromBackup(
       const outcome = await upsertDoujin(meta);
       result[outcome]++;
     } catch {
-      // Site refused — keep what the backup itself knows
+      // Site refused - keep what the backup itself knows
       if (c.title) {
         const urls: Record<DoujinSource, string> = {
           nhentai: `https://nhentai.net/g/${c.id}/`,

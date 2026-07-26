@@ -3,7 +3,7 @@ import { fetchChapters } from "./chapters";
 import { displayTitle } from "./format";
 
 /**
- * Updates feed — walks every manga-side series you're currently reading,
+ * Updates feed - walks every manga-side series you're currently reading,
  * asks the chapter sources for the latest chapter, and records how many
  * chapters sit past your progress. Manual trigger (each series costs a few
  * scrape requests), results cached in the `updates` table.
@@ -48,7 +48,7 @@ export async function checkForUpdates(
     try {
       const data = await fetchChapters(s);
       if (!data) {
-        // No site matched this run — could be transient. Leave any
+        // No site matched this run - could be transient. Leave any
         // previously-recorded result alone rather than overwriting it with
         // a false "no new chapters".
         result.failed++;
@@ -75,7 +75,7 @@ export async function checkForUpdates(
   return result;
 }
 
-/* ————— Auto-check on app start + browser notifications ————— */
+/* ----- Auto-check on app start + browser notifications ----- */
 
 const AUTO_ENABLED_KEY = "autoUpdateCheckEnabled";
 const LAST_CHECK_KEY = "lastUpdateCheckAll";
@@ -86,7 +86,7 @@ export function notificationsSupported(): boolean {
 }
 
 /**
- * Must be called from a user gesture (e.g. the Settings toggle's onChange) —
+ * Must be called from a user gesture (e.g. the Settings toggle's onChange) -
  * browsers ignore or block permission prompts fired without one.
  */
 export async function requestNotificationPermission(): Promise<NotificationPermission> {
@@ -111,7 +111,7 @@ export async function setAutoUpdateCheck(enabled: boolean): Promise<void> {
   await setSetting(AUTO_ENABLED_KEY, enabled);
 }
 
-/** Called on app start — silently skips unless enabled and due. */
+/** Called on app start - silently skips unless enabled and due. */
 export async function runAutoUpdateCheckIfDue(): Promise<void> {
   try {
     if ((await getSetting<boolean>(AUTO_ENABLED_KEY)) !== true) return;

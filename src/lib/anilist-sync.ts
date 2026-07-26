@@ -6,7 +6,7 @@ import type { EntryStatus, LibraryEntry, Series } from "./types";
  * Push-only sync back to AniList via OAuth (Authorization Code Grant).
  * Shiori is otherwise a one-way importer; this closes the loop for anyone
  * who wants their AniList list to reflect edits made in Shiori. Manual and
- * opt-in only — nothing here runs automatically, since silently overwriting
+ * opt-in only - nothing here runs automatically, since silently overwriting
  * a user's AniList data without an explicit action would be far worse than
  * a missed sync.
  */
@@ -56,7 +56,7 @@ export async function completeAuthorization(
 ): Promise<string> {
   const { clientId, clientSecret } = await getClientCredentials();
   if (!clientId || !clientSecret) {
-    throw new Error("Missing AniList Client ID/Secret — save them first.");
+    throw new Error("Missing AniList Client ID/Secret - save them first.");
   }
   const res = await fetch("/api/proxy/anilist-oauth", {
     method: "POST",
@@ -98,11 +98,11 @@ export async function disconnect(): Promise<void> {
 
 async function getToken(): Promise<string> {
   const token = await getSetting<string>(TOKEN_KEY);
-  if (!token) throw new Error("Not connected to AniList — connect in Settings first.");
+  if (!token) throw new Error("Not connected to AniList - connect in Settings first.");
   return token;
 }
 
-/* ————— Push mutation ————— */
+/* ----- Push mutation ----- */
 
 const STATUS_TO_ANILIST: Record<EntryStatus, string> = {
   current: "CURRENT",
@@ -137,7 +137,7 @@ export async function pushEntryToAniList(
   entry: LibraryEntry
 ): Promise<void> {
   if (series.id <= 0) {
-    throw new Error("This series isn't linked to AniList — use Link to AniList first.");
+    throw new Error("This series isn't linked to AniList - use Link to AniList first.");
   }
   const token = await getToken();
   await gql(

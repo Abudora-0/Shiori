@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const COMICK_API = "https://api.comick.fun";
 
-/** Proxy for the Comick API — it sits behind Cloudflare and rejects browser CORS. */
+/** Proxy for the Comick API - it sits behind Cloudflare and rejects browser CORS. */
 export async function GET(
   req: NextRequest,
   ctx: { params: Promise<{ path: string[] }> }

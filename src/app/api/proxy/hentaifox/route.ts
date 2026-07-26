@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
-/** HentaiFox gallery info scraper — add-by-URL support. Best-effort. */
+/** HentaiFox gallery info scraper - add-by-URL support. Best-effort. */
 
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36";
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   }
   if (!res.ok) {
     return NextResponse.json(
-      { error: `HentaiFox returned ${res.status} — it may be blocking access.` },
+      { error: `HentaiFox returned ${res.status} - it may be blocking access.` },
       { status: 502 }
     );
   }

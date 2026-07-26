@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
 /**
- * HentaiEra gallery info scraper — same IMHentai-family markup as HentaiFox,
+ * HentaiEra gallery info scraper - same IMHentai-family markup as HentaiFox,
  * so the parsing mirrors that route. Best-effort.
  */
 
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   }
   if (!res.ok) {
     return NextResponse.json(
-      { error: `HentaiEra returned ${res.status} — it may be blocking access.` },
+      { error: `HentaiEra returned ${res.status} - it may be blocking access.` },
       { status: 502 }
     );
   }

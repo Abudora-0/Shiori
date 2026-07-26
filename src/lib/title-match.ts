@@ -39,7 +39,7 @@ function pickBest(q: TitleQuery, candidates: RawMedia[]): RawMedia | undefined {
     return { c, score };
   });
   scored.sort((a, b) => b.score - a.score);
-  // Require at least a partial title overlap — otherwise better no match than wrong match
+  // Require at least a partial title overlap - otherwise better no match than wrong match
   return scored[0].score >= 20 ? scored[0].c : undefined;
 }
 
