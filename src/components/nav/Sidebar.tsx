@@ -94,7 +94,7 @@ export function Sidebar() {
         <Link
           href="/annex"
           title="Annex - 別館"
-          className={`mb-4 flex h-11 w-11 flex-col items-center justify-center rounded-lg transition-colors ${
+          className={`mt-3 mb-4 flex h-11 w-11 flex-col items-center justify-center rounded-lg transition-colors ${
             pathname.startsWith("/annex")
               ? "bg-ink-700 text-vermillion-bright"
               : "text-faint/60 hover:bg-ink-800 hover:text-muted"
