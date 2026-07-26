@@ -48,7 +48,15 @@ async function findUserId(username: string): Promise<string> {
     const json = await kitsuGet(
       `${API}/users?filter[${filter}]=${encodeURIComponent(username)}&fields[users]=name,slug`
     );
-    if (json.data.length > 0) return json.data[0].id;
+    if (json.data.length === 1) return json.data[0].id;
+    if (json.data.length > 1) {
+      // Display names aren't unique on Kitsu (unlike slugs) - guessing which
+      // account is "yours" risks silently importing a stranger's library.
+      throw new Error(
+        `Multiple Kitsu accounts are named "${username}" - use your exact profile slug ` +
+          `instead (the part after kitsu.io/users/ on your profile page).`
+      );
+    }
   }
   throw new Error(`Kitsu user "${username}" not found.`);
 }
