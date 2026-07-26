@@ -43,7 +43,23 @@ async function kitsuGet(url: string): Promise<{ data: KitsuResource[]; included?
   return res.json();
 }
 
+async function userIdExists(id: string): Promise<boolean> {
+  const res = await fetch(`${API}/users/${id}?fields[users]=name`, { headers: HEADERS });
+  if (res.status === 404) return false;
+  if (!res.ok) throw new Error(`Kitsu error (${res.status}).`);
+  const json = (await res.json()) as { data?: unknown };
+  return !!json.data;
+}
+
 async function findUserId(username: string): Promise<string> {
+  // A bare numeric id (from the user's profile URL or API response) sidesteps
+  // slug/name lookup entirely - useful since display names aren't unique and
+  // not everyone has a slug set.
+  if (/^\d+$/.test(username)) {
+    if (await userIdExists(username)) return username;
+    throw new Error(`No Kitsu user with id ${username}.`);
+  }
+
   for (const filter of ["slug", "name"]) {
     const json = await kitsuGet(
       `${API}/users?filter[${filter}]=${encodeURIComponent(username)}&fields[users]=name,slug`
