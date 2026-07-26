@@ -19,7 +19,7 @@ import {
   Upload,
 } from "lucide-react";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
-import { db, getSetting, setSetting } from "@/lib/db";
+import { db, getMalClientId, getSetting, setSetting } from "@/lib/db";
 import { lockAnnex, setPin, verifyPin } from "@/lib/annex";
 import { fixMissingCovers, reclassifyLibrary } from "@/lib/maintenance";
 import {
@@ -61,7 +61,7 @@ export default function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    getSetting<string>("malClientId").then((v) => v && setMalClientId(v));
+    getMalClientId().then(setMalClientId);
   }, []);
 
   async function saveClientId() {

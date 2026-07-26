@@ -9,7 +9,7 @@ import { fetchMalUserList } from "@/lib/importers/mal";
 import { fetchKitsuUserList } from "@/lib/importers/kitsu";
 import { importMihonBackup } from "@/lib/importers/mihon";
 import { mergeImport, type ImportResult, type MergeStrategy } from "@/lib/merge";
-import { getSetting, setSetting } from "@/lib/db";
+import { getMalClientId, getSetting, setSetting } from "@/lib/db";
 
 type Phase = "idle" | "working" | "done" | "error";
 
@@ -221,7 +221,7 @@ function MalCard({ strategy }: { strategy: MergeStrategy }) {
 
   useEffect(() => {
     getSetting<string>("malUsername").then((v) => v && setUsername(v));
-    getSetting<string>("malClientId").then((v) => setClientId(v ?? ""));
+    getMalClientId().then(setClientId);
   }, []);
 
   async function start() {

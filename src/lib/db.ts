@@ -72,3 +72,13 @@ export async function getSetting<T>(key: string): Promise<T | undefined> {
 export async function setSetting(key: string, value: unknown): Promise<void> {
   await db.settings.put({ key, value });
 }
+
+/**
+ * MAL Client ID, saved value first, falling back to a build-time default so
+ * a fresh browser profile doesn't need it re-entered by hand. Set
+ * NEXT_PUBLIC_MAL_CLIENT_ID in .env.local (gitignored) to provide one.
+ */
+export async function getMalClientId(): Promise<string> {
+  const saved = await getSetting<string>("malClientId");
+  return saved || process.env.NEXT_PUBLIC_MAL_CLIENT_ID || "";
+}
