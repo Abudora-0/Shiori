@@ -166,6 +166,7 @@ function BackupExtract() {
         msg:
           `Done - ${result.found} doujins found out of ${result.scanned} backup entries: ` +
           `${result.added} added, ${result.updated} refreshed` +
+          (result.skipped ? `, ${result.skipped} already in your Annex (skipped)` : "") +
           (result.fallback ? `, ${result.fallback} imported with backup data only (site refused)` : "") +
           (result.failed ? `, ${result.failed} failed` : "") +
           ".",

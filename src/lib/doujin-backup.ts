@@ -1,7 +1,7 @@
 import pako from "pako";
 import { parseMihonBackup } from "./importers/mihon";
 import { fetchNhentaiGallery, upsertDoujin } from "./doujin";
-import { getSetting } from "./db";
+import { db, getSetting } from "./db";
 import type { DoujinEntry, DoujinSource } from "./types";
 
 /**
@@ -146,6 +146,7 @@ export interface DoujinBackupResult {
   updated: number;
   fallback: number;
   failed: number;
+  skipped: number;
   scanned: number;
 }
 
@@ -162,12 +163,18 @@ export async function importDoujinsFromBackup(
   }
 
   const nhCookie = await getSetting<string>("nhCookie");
+  // Already-imported entries are skipped outright (no re-fetch) so retrying
+  // a huge backup after an interruption only does work for what's missing.
+  const existing = new Set(
+    (await db.doujins.toArray()).map((d) => `${d.source}:${d.sourceId}`)
+  );
   const result: DoujinBackupResult = {
     found: candidates.length,
     added: 0,
     updated: 0,
     fallback: 0,
     failed: 0,
+    skipped: 0,
     scanned: totalManga,
   };
 
@@ -179,6 +186,10 @@ export async function importDoujinsFromBackup(
       total: candidates.length,
       current: c.title ?? `${c.source} #${c.id}`,
     });
+    if (existing.has(`${c.source}:${c.id}`)) {
+      result.skipped++;
+      continue;
+    }
     try {
       let meta: Omit<DoujinEntry, "id" | "addedAt" | "favorite">;
       if (c.source === "nhentai") {
