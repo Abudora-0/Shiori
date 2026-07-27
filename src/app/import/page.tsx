@@ -404,7 +404,7 @@ function MihonCard({ strategy }: { strategy: MergeStrategy }) {
   return (
     <CardShell
       name="Mihon / Tachiyomi backup"
-      note="Upload a .tachibk or .proto.gz backup - parsed entirely in your browser."
+      note="Upload a .tachibk or .proto.gz backup - parsed entirely in your browser. Aniyomi backups import both manga and anime."
       badge=".tachibk"
       badgeClass="bg-[#2b2440] text-[#a996f2]"
     >

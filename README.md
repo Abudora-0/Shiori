@@ -11,7 +11,8 @@ browser, no account needed.
 - **Import** - AniList (public GraphQL, just a username), MyAnimeList (official API
   with a free Client ID), Kitsu (public API) and **Mihon / Tachiyomi backups**
   (`.tachibk` / `.proto.gz`, parsed entirely in your browser, resolved via embedded
-  tracker links). Cross-service dedupe via AniList↔MAL↔Kitsu id mapping.
+  tracker links) - including Aniyomi's anime entries alongside manga, from the
+  same backup file. Cross-service dedupe via AniList↔MAL↔Kitsu id mapping.
 - **Library** - tabs per type, status filters, sorting, search, grid/list views,
   quick +1 progress, favorites
 - **Series pages** - synopsis, genres/tags, characters with voice actors (click for
