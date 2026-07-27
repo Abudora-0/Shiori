@@ -178,7 +178,7 @@ async function runPool<T>(
 // many requests hit any *one* of them at once, so a huge backup doesn't
 // take hours from the per-item throttle alone but also doesn't burst any
 // single site hard enough to risk getting rate-limited or blocked.
-const CONCURRENCY_PER_SOURCE = 3;
+const CONCURRENCY_PER_SOURCE = 5;
 
 export async function importDoujinsFromBackup(
   buffer: ArrayBuffer,
