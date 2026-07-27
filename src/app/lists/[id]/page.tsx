@@ -6,9 +6,10 @@ import { useParams, useRouter } from "next/navigation";
 import { useLiveQuery } from "dexie-react-hooks";
 import { ArrowLeft, Check, Pencil, Sparkles, Trash2, X } from "lucide-react";
 import { db } from "@/lib/db";
-import { displayTitle, formatRating, KIND_LABEL } from "@/lib/format";
+import { displayTitle, formatRating, isAdultKind, KIND_LABEL } from "@/lib/format";
 import { describeSmart, matchSmart } from "@/lib/smartlist";
 import { useLibrary } from "@/lib/hooks";
+import { useUiStore } from "@/lib/store";
 import { Cover } from "@/components/ui/Cover";
 
 export default function ListDetailPage() {
@@ -22,16 +23,20 @@ export default function ListDetailPage() {
       Number.isFinite(id) ? ((await db.lists.get(id)) ?? null) : null,
     [id]
   );
+  const unlocked = useUiStore((s) => s.annexUnlocked);
   // Only smart lists need the full library join - skip it for manual lists
   const library = useLibrary(list === undefined || !!list?.smart);
+  // Manual lists' raw seriesIds bypass useLibrary()'s Annex gate entirely -
+  // filter here too, or a locked Hentai/Pornhwa member's cover and title
+  // would still render in a manual list.
   const manualItems = useLiveQuery(async () => {
     if (!list || list.smart) return undefined;
     const series = await db.series.bulkGet(list.seriesIds);
     const entries = await db.entries.bulkGet(list.seriesIds);
     return list.seriesIds
       .map((sid, i) => ({ series: series[i], entry: entries[i] }))
-      .filter((x) => x.series);
-  }, [list?.seriesIds.join(","), list?.smart != null]);
+      .filter((x) => x.series && (unlocked || !isAdultKind(x.series.kind)));
+  }, [list?.seriesIds.join(","), list?.smart != null, unlocked]);
 
   const items = list?.smart
     ? library?.filter((i) => matchSmart(list.smart!, i))

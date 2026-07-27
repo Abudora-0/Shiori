@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { runAutoBackupIfDue } from "@/lib/autobackup";
 import { runAutoUpdateCheckIfDue } from "@/lib/updates";
+import { isUnlocked } from "@/lib/annex";
+import { useUiStore } from "@/lib/store";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [client] = useState(
@@ -20,6 +22,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     navigator.serviceWorker?.register("/sw.js").catch(() => {});
     runAutoBackupIfDue();
     runAutoUpdateCheckIfDue();
+    // sessionStorage isn't readable during SSR, so the store starts locked
+    // and syncs to the real (already-unlocked-this-session) state post-mount.
+    if (isUnlocked()) useUiStore.getState().setAnnexUnlocked(true);
   }, []);
 
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;

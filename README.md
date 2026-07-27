@@ -33,6 +33,9 @@ top - all stored in your browser, no account needed.
   own session cookies), add galleries by link from nhentai / HentaiFox / Hitomi, or
   upload a Tachiyomi / TachiyomiAZ / Mihon backup to extract just its doujin entries
   with fresh site metadata. Tag & artist browsing, favorites, ratings, private notes.
+  The same PIN also gates your **Hentai** and **Pornhwa** shelves in place across the
+  whole app (Library tab, Dashboard, Stats, Discover, Lists, Updates, quick search,
+  direct links) - they stay in your regular Library, just hidden until unlocked.
 - **Custom lists (選集)** - curated shelves with add-to-list from any series page,
   plus auto-updating **smart lists** built from filters (type/status/genre/rating)
 - **Updates feed (更新)** - checks the chapter sites for everything you're reading

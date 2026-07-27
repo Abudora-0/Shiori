@@ -11,6 +11,7 @@ import { useEntry, useSeries } from "@/lib/hooks";
 import { useUiStore } from "@/lib/store";
 import {
   displayTitle,
+  isAdultKind,
   isWatched,
   KIND_LABEL,
   maxProgress,
@@ -19,6 +20,7 @@ import {
   STATUS_COLOR,
   subTitle,
 } from "@/lib/format";
+import { PinGate } from "@/components/annex/PinGate";
 import { EnsoScore } from "@/components/ui/EnsoScore";
 import { Chip } from "@/components/ui/Chip";
 import { Cover } from "@/components/ui/Cover";
@@ -69,6 +71,17 @@ export default function SeriesPage() {
           </p>
         )}
       </div>
+    );
+  }
+
+  if (isAdultKind(series.kind)) {
+    return (
+      <PinGate
+        title={`Unlock ${KIND_LABEL[series.kind]}`}
+        subtitle="This series is on the Hentai/Pornhwa shelf, which hides behind the Annex PIN. It locks again when the browser closes."
+      >
+        <SeriesDetail series={series} inLibrary={!!entry} />
+      </PinGate>
     );
   }
 

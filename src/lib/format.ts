@@ -34,6 +34,11 @@ export function isWatched(kind: MediaKind): boolean {
   return kind === "ANIME" || kind === "HENTAI";
 }
 
+/** Kinds gated behind the Annex PIN, same as the doujin shelf. */
+export function isAdultKind(kind: MediaKind): boolean {
+  return kind === "HENTAI" || kind === "PORNHWA";
+}
+
 export function statusKanji(status: EntryStatus, kind: MediaKind): string {
   switch (status) {
     case "current":

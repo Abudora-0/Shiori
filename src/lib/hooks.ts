@@ -2,6 +2,8 @@
 
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "./db";
+import { isAdultKind } from "./format";
+import { useUiStore } from "./store";
 import type { LibraryEntry, Series } from "./types";
 
 export interface LibraryItem {
@@ -22,8 +24,16 @@ export interface LibraryItem {
  * individual key lookups, and since this whole function re-runs on every
  * write to either table anyway (Dexie has no incremental diffing), the join
  * strategy is the only lever we have to keep each re-run cheap.
+ *
+ * Hentai/Pornhwa entries are left out entirely while the Annex PIN is
+ * locked - same "hidden from casual sight" treatment as the doujin shelf,
+ * just applied in place rather than moved to a separate table. Every view
+ * built on this hook (Library, Dashboard, Stats, quick search, lists…)
+ * inherits the gate for free; unlocking (annexUnlocked flips true) re-runs
+ * this query and they reappear everywhere at once.
  */
 export function useLibrary(enabled = true): LibraryItem[] | undefined {
+  const unlocked = useUiStore((s) => s.annexUnlocked);
   return useLiveQuery(async () => {
     if (!enabled) return undefined;
     const [entries, allSeries] = await Promise.all([
@@ -34,10 +44,12 @@ export function useLibrary(enabled = true): LibraryItem[] | undefined {
     const items: LibraryItem[] = [];
     for (const entry of entries) {
       const s = seriesById.get(entry.seriesId);
-      if (s) items.push({ series: s, entry });
+      if (!s) continue;
+      if (!unlocked && isAdultKind(s.kind)) continue;
+      items.push({ series: s, entry });
     }
     return items;
-  }, [enabled]);
+  }, [enabled, unlocked]);
 }
 
 /** undefined = still loading, null = not in local db. */

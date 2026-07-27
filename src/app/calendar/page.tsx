@@ -7,7 +7,8 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { Tv } from "lucide-react";
 import { db } from "@/lib/db";
 import { gql } from "@/lib/anilist";
-import { displayTitle, isWatched } from "@/lib/format";
+import { displayTitle, isAdultKind, isWatched } from "@/lib/format";
+import { useUiStore } from "@/lib/store";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { Cover } from "@/components/ui/Cover";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -51,6 +52,8 @@ async function fetchAiring(ids: number[]): Promise<Airing[]> {
 }
 
 export default function CalendarPage() {
+  const unlocked = useUiStore((s) => s.annexUnlocked);
+
   // Airing candidates: library anime that are releasing or upcoming
   const watching = useLiveQuery(async () => {
     const entries = await db.entries.toArray();
@@ -61,6 +64,7 @@ export default function CalendarPage() {
       if (
         s &&
         isWatched(s.kind) &&
+        (unlocked || !isAdultKind(s.kind)) &&
         s.id > 0 &&
         entries[i].status !== "dropped" &&
         (s.mediaStatus === "RELEASING" || s.mediaStatus === "NOT_YET_RELEASED")
@@ -69,7 +73,7 @@ export default function CalendarPage() {
       }
     }
     return map;
-  }, []);
+  }, [unlocked]);
 
   const ids = useMemo(
     () => (watching ? [...watching.keys()].sort((a, b) => a - b) : undefined),

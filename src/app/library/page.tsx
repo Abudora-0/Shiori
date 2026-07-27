@@ -9,6 +9,7 @@ import { Chip } from "@/components/ui/Chip";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
 import { CoverCard } from "@/components/library/CoverCard";
 import { EditEntryModal } from "@/components/library/EditEntryModal";
+import { PinGate } from "@/components/annex/PinGate";
 import { Cover } from "@/components/ui/Cover";
 import { Select } from "@/components/ui/Select";
 import { useLibrary } from "@/lib/hooks";
@@ -18,6 +19,7 @@ import {
   ALL_STATUSES,
   displayTitle,
   formatRating,
+  isAdultKind,
   isWatched,
   KIND_LABEL,
   maxProgress,
@@ -199,7 +201,14 @@ export default function LibraryPage() {
       </div>
 
       {/* Content */}
-      {!filtered ? (
+      {ui.kindTab !== "ALL" && isAdultKind(ui.kindTab) && !ui.annexUnlocked ? (
+        <PinGate
+          title={`Unlock ${KIND_LABEL[ui.kindTab]}`}
+          subtitle="This shelf hides behind the Annex PIN, same as the doujin shelf. It locks again when the browser closes."
+        >
+          {null}
+        </PinGate>
+      ) : !filtered ? (
         <CardGridSkeleton />
       ) : filtered.length === 0 ? (
         <EmptyState hasAny={(items?.length ?? 0) > 0} />

@@ -5,9 +5,17 @@ import Link from "next/link";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Plus, Sparkles, Trash2 } from "lucide-react";
 import { db, logActivity } from "@/lib/db";
-import { ALL_KINDS, ALL_STATUSES, formatDate, KIND_LABEL, statusLabel } from "@/lib/format";
+import {
+  ALL_KINDS,
+  ALL_STATUSES,
+  formatDate,
+  isAdultKind,
+  KIND_LABEL,
+  statusLabel,
+} from "@/lib/format";
 import { describeSmart, matchSmart } from "@/lib/smartlist";
 import { useLibrary, type LibraryItem } from "@/lib/hooks";
+import { useUiStore } from "@/lib/store";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { Chip } from "@/components/ui/Chip";
 import { Cover } from "@/components/ui/Cover";
@@ -215,16 +223,23 @@ function ListCard({
   list: CustomList;
   items: LibraryItem[] | undefined;
 }) {
+  const unlocked = useUiStore((s) => s.annexUnlocked);
   const smartIds =
     list.smart && items
       ? items.filter((i) => matchSmart(list.smart!, i)).map((i) => i.series.id)
       : null;
+  // Manual lists store raw seriesIds untouched by the Annex lock - filter
+  // covers here so a locked list preview can't reveal a hidden Hentai/
+  // Pornhwa member's cover. Smart lists are already safe: they're derived
+  // from `items`, which useLibrary() has already gated.
   const memberIds = smartIds ?? list.seriesIds;
 
   const covers = useLiveQuery(async () => {
     const series = await db.series.bulkGet(memberIds.slice(0, 3));
-    return series.filter(Boolean).map((s) => s!.cover);
-  }, [memberIds.slice(0, 3).join(",")]);
+    return series
+      .filter((s): s is NonNullable<typeof s> => !!s && (unlocked || !isAdultKind(s.kind)))
+      .map((s) => s.cover);
+  }, [memberIds.slice(0, 3).join(","), unlocked]);
 
   async function remove(e: React.MouseEvent) {
     e.preventDefault();

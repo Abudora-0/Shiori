@@ -2,21 +2,36 @@
 
 import { useEffect, useState } from "react";
 import { KeyRound, Lock } from "lucide-react";
-import { getPinHash, isUnlocked, markUnlocked, setPin, verifyPin } from "@/lib/annex";
+import { getPinHash, markUnlocked, setPin, verifyPin } from "@/lib/annex";
+import { useUiStore } from "@/lib/store";
 
-type GateState = "loading" | "setup" | "locked" | "open";
+type GateState = "loading" | "setup" | "locked";
 
-export function PinGate({ children }: { children: React.ReactNode }) {
+/**
+ * Gates its children behind the Annex PIN. Reused both for the whole Annex
+ * page and inline, in place, for Hentai/Pornhwa content elsewhere in the app
+ * (Library tab, series detail, Discover tab, ...) - same PIN, same session
+ * unlock, just applied to more surfaces than the doujin shelf alone.
+ */
+export function PinGate({
+  children,
+  title,
+  subtitle,
+}: {
+  children: React.ReactNode;
+  title?: string;
+  subtitle?: string;
+}) {
+  const unlocked = useUiStore((s) => s.annexUnlocked);
   const [state, setState] = useState<GateState>("loading");
 
   useEffect(() => {
-    getPinHash().then((hash) =>
-      setState(!hash ? "setup" : isUnlocked() ? "open" : "locked")
-    );
-  }, []);
+    if (unlocked) return;
+    getPinHash().then((hash) => setState(!hash ? "setup" : "locked"));
+  }, [unlocked]);
 
+  if (unlocked) return <>{children}</>;
   if (state === "loading") return null;
-  if (state === "open") return <>{children}</>;
 
   return (
     <div className="flex min-h-[70dvh] items-center justify-center px-4">
@@ -24,9 +39,9 @@ export function PinGate({ children }: { children: React.ReactNode }) {
         <div className="pointer-events-none absolute inset-0 bg-ink-850/95" />
         <div className="relative">
           {state === "setup" ? (
-            <SetupForm onDone={() => setState("open")} />
+            <SetupForm title={title} subtitle={subtitle} />
           ) : (
-            <UnlockForm onDone={() => setState("open")} />
+            <UnlockForm title={title} />
           )}
         </div>
       </div>
@@ -34,7 +49,8 @@ export function PinGate({ children }: { children: React.ReactNode }) {
   );
 }
 
-function SetupForm({ onDone }: { onDone: () => void }) {
+function SetupForm({ title, subtitle }: { title?: string; subtitle?: string }) {
+  const setAnnexUnlocked = useUiStore((s) => s.setAnnexUnlocked);
   const [pin, setPinValue] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
@@ -44,7 +60,7 @@ function SetupForm({ onDone }: { onDone: () => void }) {
     if (pin !== confirm) return setError("PINs don't match.");
     await setPin(pin);
     markUnlocked();
-    onDone();
+    setAnnexUnlocked(true);
   }
 
   return (
@@ -52,10 +68,12 @@ function SetupForm({ onDone }: { onDone: () => void }) {
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-vermillion/15 text-vermillion-bright">
         <KeyRound size={22} />
       </div>
-      <h1 className="mt-4 font-display text-xl font-bold">Set up the Annex</h1>
+      <h1 className="mt-4 font-display text-xl font-bold">
+        {title ?? "Set up the Annex"}
+      </h1>
       <p className="mt-2 text-xs leading-relaxed text-muted">
-        Your doujin shelf hides behind a PIN. It locks again when the browser
-        closes. (Local privacy screen, not encryption.)
+        {subtitle ??
+          "Your doujin shelf hides behind a PIN. It locks again when the browser closes. (Local privacy screen, not encryption.)"}
       </p>
       <div className="mt-5 space-y-3">
         <PinInput value={pin} onChange={setPinValue} placeholder="Choose a PIN" autoFocus />
@@ -72,14 +90,15 @@ function SetupForm({ onDone }: { onDone: () => void }) {
   );
 }
 
-function UnlockForm({ onDone }: { onDone: () => void }) {
+function UnlockForm({ title }: { title?: string }) {
+  const setAnnexUnlocked = useUiStore((s) => s.setAnnexUnlocked);
   const [pin, setPinValue] = useState("");
   const [error, setError] = useState(false);
 
   async function submit() {
     if (await verifyPin(pin)) {
       markUnlocked();
-      onDone();
+      setAnnexUnlocked(true);
     } else {
       setError(true);
       setPinValue("");
@@ -91,7 +110,7 @@ function UnlockForm({ onDone }: { onDone: () => void }) {
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-vermillion/15 text-vermillion-bright">
         <Lock size={22} />
       </div>
-      <h1 className="mt-4 font-display text-xl font-bold">Annex</h1>
+      <h1 className="mt-4 font-display text-xl font-bold">{title ?? "Annex"}</h1>
       <p className="mt-2 text-xs text-muted">Enter your PIN to open the shelf.</p>
       <div className="mt-5">
         <PinInput value={pin} onChange={setPinValue} placeholder="PIN" onEnter={submit} autoFocus />

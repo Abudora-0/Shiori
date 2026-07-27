@@ -5,6 +5,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { Heart, Lock, Search as SearchIcon, X } from "lucide-react";
 import { db } from "@/lib/db";
 import { lockAnnex } from "@/lib/annex";
+import { useUiStore } from "@/lib/store";
 import { formatRating } from "@/lib/format";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { Cover } from "@/components/ui/Cover";
@@ -29,6 +30,7 @@ export default function AnnexPage() {
 }
 
 function AnnexLibrary() {
+  const setAnnexUnlocked = useUiStore((s) => s.setAnnexUnlocked);
   const doujins = useLiveQuery(() => db.doujins.toArray(), []);
   const [search, setSearch] = useState("");
   const [source, setSource] = useState<DoujinSource | "all">("all");
@@ -101,7 +103,7 @@ function AnnexLibrary() {
         <button
           onClick={() => {
             lockAnnex();
-            window.location.reload();
+            setAnnexUnlocked(false);
           }}
           className="mt-8 flex items-center gap-1.5 rounded-lg border border-line-strong px-3 py-2 text-xs text-muted transition-colors hover:border-vermillion/60 hover:text-text"
         >

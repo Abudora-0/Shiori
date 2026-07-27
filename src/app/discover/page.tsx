@@ -6,8 +6,10 @@ import { Loader2 } from "lucide-react";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
 import { SeriesResultCard } from "@/components/SeriesResultCard";
+import { PinGate } from "@/components/annex/PinGate";
 import { gql, MEDIA_FIELDS, mapMediaToSeries, type RawMedia } from "@/lib/anilist";
 import { useLibraryIds } from "@/lib/hooks";
+import { useUiStore } from "@/lib/store";
 import type { Series } from "@/lib/types";
 
 type Tab = "season" | "anime" | "manga" | "manhwa" | "pornhwa" | "hentai";
@@ -20,6 +22,8 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "pornhwa", label: "Pornhwa" },
   { id: "hentai", label: "Hentai" },
 ];
+
+const ADULT_TABS = new Set<Tab>(["pornhwa", "hentai"]);
 
 function currentSeason(): { season: string; year: number } {
   const now = new Date();
@@ -73,10 +77,13 @@ async function fetchPage(tab: Tab, page: number): Promise<{ series: Series[]; ha
 export default function DiscoverPage() {
   const [tab, setTab] = useState<Tab>("season");
   const libraryIds = useLibraryIds();
+  const unlocked = useUiStore((s) => s.annexUnlocked);
+  const gated = ADULT_TABS.has(tab) && !unlocked;
 
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["discover", tab],
+      enabled: !gated,
       initialPageParam: 1,
       queryFn: ({ pageParam }) => fetchPage(tab, pageParam),
       getNextPageParam: (last, all) => (last.hasNext ? all.length + 1 : undefined),
@@ -114,7 +121,14 @@ export default function DiscoverPage() {
         ))}
       </div>
 
-      {isLoading ? (
+      {gated ? (
+        <PinGate
+          title={`Unlock ${TABS.find((t) => t.id === tab)?.label}`}
+          subtitle="This shelf hides behind the Annex PIN, same as the doujin shelf. It locks again when the browser closes."
+        >
+          {null}
+        </PinGate>
+      ) : isLoading ? (
         <CardGridSkeleton count={12} />
       ) : isError ? (
         <p className="py-16 text-center text-vermillion-bright">

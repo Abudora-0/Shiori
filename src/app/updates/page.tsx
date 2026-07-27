@@ -6,14 +6,20 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { BellRing, CheckCheck, Loader2, RefreshCw } from "lucide-react";
 import { db, logActivity } from "@/lib/db";
 import { checkForUpdates } from "@/lib/updates";
-import { displayTitle, formatDate, KIND_LABEL } from "@/lib/format";
+import { displayTitle, formatDate, isAdultKind, KIND_LABEL } from "@/lib/format";
+import { useUiStore } from "@/lib/store";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { Cover } from "@/components/ui/Cover";
 
 export default function UpdatesPage() {
   const [running, setRunning] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const unlocked = useUiStore((s) => s.annexUnlocked);
 
+  // Pornhwa is manga-side and still checked for new chapters (only Anime/
+  // Hentai are excluded, in updates.ts) - filter its rows here too, or a
+  // locked Pornhwa entry's title/cover/chapter count would leak right onto
+  // this feed.
   const rows = useLiveQuery(async () => {
     const updates = await db.updates.toArray();
     const withNew = updates.filter((u) => u.newCount > 0);
@@ -21,9 +27,9 @@ export default function UpdatesPage() {
     const entries = await db.entries.bulkGet(withNew.map((u) => u.seriesId));
     return withNew
       .map((u, i) => ({ update: u, series: series[i], entry: entries[i] }))
-      .filter((r) => r.series && r.entry)
+      .filter((r) => r.series && r.entry && (unlocked || !isAdultKind(r.series.kind)))
       .sort((a, b) => b.update.newCount - a.update.newCount);
-  }, []);
+  }, [unlocked]);
 
   const lastChecked = useLiveQuery(async () => {
     const all = await db.updates.orderBy("checkedAt").reverse().limit(1).toArray();
