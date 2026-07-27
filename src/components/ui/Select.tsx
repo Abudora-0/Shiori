@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
 
 export interface SelectOption {
@@ -31,6 +31,7 @@ export function Select({
   const [active, setActive] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const listboxId = useId();
 
   const selectedIndex = Math.max(
     0,
@@ -94,6 +95,7 @@ export function Select({
         role="combobox"
         aria-haspopup="listbox"
         aria-expanded={open}
+        aria-controls={listboxId}
         className={`flex items-center justify-between gap-2 text-left outline-none focus:border-vermillion ${className}`}
       >
         <span className="truncate">{selected?.label ?? ""}</span>
@@ -105,6 +107,7 @@ export function Select({
       {open && (
         <div
           ref={listRef}
+          id={listboxId}
           role="listbox"
           tabIndex={-1}
           onKeyDown={onListKey}
