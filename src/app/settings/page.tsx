@@ -47,6 +47,7 @@ import {
 } from "@/lib/anilist-sync";
 import { testAllSources, type SourceHealth } from "@/lib/source-health";
 import { DupeSection } from "@/components/settings/DupeSection";
+import { DoujinCleanupSection } from "@/components/settings/DoujinCleanupSection";
 import {
   clearAllData,
   downloadBackup,
@@ -184,6 +185,8 @@ export default function SettingsPage() {
         <SourceHealthSection />
 
         <DupeSection />
+
+        <DoujinCleanupSection />
 
         <AnnexSection />
 

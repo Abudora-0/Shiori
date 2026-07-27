@@ -2,7 +2,8 @@ import { db } from "./db";
 import { resolveByAniListIds } from "./anilist";
 import { displayTitle } from "./format";
 import { HARD_ADULT_SOURCES } from "./importers/mihon";
-import type { MediaKind, Series } from "./types";
+import { DOUJIN_SOURCE_NAME_RE } from "./doujin-detect";
+import type { LibraryEntry, MediaKind, Series } from "./types";
 
 /**
  * Library maintenance jobs, run from Settings:
@@ -10,6 +11,10 @@ import type { MediaKind, Series } from "./types";
  *   series without a working cover (mostly Mihon local entries).
  * - reclassifyLibrary: re-resolves AniList-known series (picking up isAdult →
  *   PORNHWA) and applies adult-genre heuristics to local entries.
+ * - findDoujinPollution / removeDoujinPollution: cleans up doujin entries
+ *   that landed in the regular Library from a backup imported before the
+ *   Mihon importer started excluding doujin sources (they belong in the
+ *   Annex only, via the separate doujin-backup import).
  */
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -364,4 +369,59 @@ export async function reclassifyLibrary(
 
   await db.series.bulkPut(toPut);
   return result;
+}
+
+/* ----- Doujin pollution cleanup ----- */
+
+export interface DoujinPollutionEntry {
+  series: Series;
+  entry?: LibraryEntry;
+}
+
+/**
+ * Local (hashed-id) Library entries whose Mihon source is a doujin site.
+ * These only exist from a backup imported before importMihonBackup started
+ * filtering doujin sources out - the Annex's own doujin-backup import is the
+ * only path that's supposed to bring them in.
+ */
+export async function findDoujinPollution(): Promise<DoujinPollutionEntry[]> {
+  const [allSeries, allEntries] = await Promise.all([
+    db.series.toArray(),
+    db.entries.toArray(),
+  ]);
+  const entryBySeries = new Map(allEntries.map((e) => [e.seriesId, e]));
+  return allSeries
+    .filter(
+      (s) =>
+        s.id <= -3_000_000_000 && s.sourceName && DOUJIN_SOURCE_NAME_RE.test(s.sourceName)
+    )
+    .map((series) => ({ series, entry: entryBySeries.get(series.id) }));
+}
+
+/** Deletes the given series entirely (entry, reviews, notes, extras, updates, list refs). */
+export async function removeDoujinPollution(seriesIds: number[]): Promise<number> {
+  await db.transaction(
+    "rw",
+    [db.series, db.entries, db.reviews, db.notes, db.extras, db.lists, db.updates],
+    async () => {
+      for (const id of seriesIds) {
+        await db.entries.delete(id);
+        await db.reviews.where("seriesId").equals(id).delete();
+        await db.notes.where("seriesId").equals(id).delete();
+        await db.extras.delete(id);
+        await db.updates.delete(id);
+        await db.series.delete(id);
+      }
+      const lists = await db.lists.toArray();
+      for (const list of lists) {
+        if (list.seriesIds.some((id) => seriesIds.includes(id))) {
+          await db.lists.update(list.id!, {
+            seriesIds: list.seriesIds.filter((id) => !seriesIds.includes(id)),
+            updatedAt: Date.now(),
+          });
+        }
+      }
+    }
+  );
+  return seriesIds.length;
 }

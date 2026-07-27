@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detect } from "./doujin-backup";
+import { detect } from "./doujin-detect";
 
 describe("detect (Mihon backup doujin source detection)", () => {
   it("identifies nhentai from the /g/<id> URL shape", () => {

@@ -5,6 +5,7 @@ import type { ImportedItem } from "../anilist";
 import { resolveByAniListIds, resolveByMalIds } from "../anilist";
 import { matchTitles, type TitleQuery } from "../title-match";
 import { localFallbackId } from "../ids";
+import { detect as detectDoujin } from "../doujin-detect";
 
 /**
  * Mihon / Tachiyomi-fork backup importer.
@@ -316,9 +317,22 @@ export async function importMihonBackup(
   const { mangas: allMangas, sources, animes: allAnimes, animeSources } =
     parseMihonBackup(buffer);
   // favorite === false → history-only entry; undefined means true (Kotlin default)
-  const mangas = allMangas.filter((m) => m.favorite !== false && (m.title || m.url));
+  // Doujin sources (nhentai / HentaiFox / HentaiEra / Hitomi) are excluded here -
+  // they belong exclusively in the Annex, imported separately via the doujin
+  // backup path, and must never also land in the regular Library.
+  const mangas = allMangas.filter(
+    (m) =>
+      m.favorite !== false &&
+      (m.title || m.url) &&
+      !detectDoujin(m.url, m.source ? sources.get(m.source) : undefined)
+  );
   // Empty for a plain Tachiyomi/Mihon backup - only present in Aniyomi's fork.
-  const animes = allAnimes.filter((a) => a.favorite !== false && (a.title || a.url));
+  const animes = allAnimes.filter(
+    (a) =>
+      a.favorite !== false &&
+      (a.title || a.url) &&
+      !detectDoujin(a.url, a.source ? animeSources.get(a.source) : undefined)
+  );
   const totalCount = mangas.length + animes.length;
   onProgress?.({ phase: "parsing", count: totalCount, total: totalCount });
 
