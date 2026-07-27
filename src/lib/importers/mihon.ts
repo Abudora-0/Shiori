@@ -21,12 +21,15 @@ message Backup {
   repeated BackupManga backupManga = 1;
   repeated BackupSource backupSources = 101;
   // Aniyomi (manga+anime Mihon fork) extends the same container with an
-  // anime side, bumping field numbers by 200/300 to avoid colliding with
-  // the manga ones above. Absent in a plain Tachiyomi/Mihon backup, in
-  // which case these just decode as empty - best-effort from Aniyomi's
-  // public schema, unverified against a real anime backup file.
-  repeated BackupAnime backupAnime = 201;
-  repeated BackupSource backupAnimeSources = 301;
+  // anime side. Absent in a plain Tachiyomi/Mihon backup, in which case
+  // these just decode as empty. Field numbers (501/503, not a tidy +200/+300
+  // offset from the manga ones) confirmed by walking the raw wire format of
+  // a real Aniyomi backup - the BackupAnime/BackupEpisode message shapes
+  // below mirror BackupManga/BackupChapter's own field numbers exactly and
+  // matched real decoded data (titles, thumbnail URLs, studio names, and
+  // the anime entries' source ids resolving through backupAnimeSources).
+  repeated BackupAnime backupAnime = 501;
+  repeated BackupSource backupAnimeSources = 503;
 }
 message BackupSource {
   optional string name = 1;
