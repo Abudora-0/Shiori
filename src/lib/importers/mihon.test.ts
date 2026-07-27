@@ -101,4 +101,23 @@ describe("readEpisodeProgress (Aniyomi anime entries)", () => {
   it("returns 0 when nothing is watched", () => {
     expect(readEpisodeProgress({})).toBe(0);
   });
+
+  it("counts a seen episode even with a sentinel/invalid episode number", () => {
+    // Real-world case (confirmed against an actual Aniyomi backup): single-
+    // video sources set episodeNumber to -1 (no real ordinal). A naive
+    // "max episode number seen" would never register this as progress
+    // since -1 never exceeds the starting max of 0.
+    const a: RawBackupAnime = { episodes: [{ seen: true, episodeNumber: -1 }] };
+    expect(readEpisodeProgress(a)).toBe(1);
+  });
+
+  it("prefers the real episode number over the seen-count when both are available", () => {
+    const a: RawBackupAnime = {
+      episodes: [
+        { seen: true, episodeNumber: -1 },
+        { seen: true, episodeNumber: 8 },
+      ],
+    };
+    expect(readEpisodeProgress(a)).toBe(8);
+  });
 });

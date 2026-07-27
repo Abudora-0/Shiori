@@ -283,14 +283,23 @@ function localAnimeSeries(a: RawBackupAnime, sourceName?: string): Series {
 }
 
 export function readEpisodeProgress(a: RawBackupAnime): number {
-  let max = 0;
-  for (const e of a.episodes ?? []) {
-    if (e.seen && (e.episodeNumber ?? 0) > max) max = e.episodeNumber!;
+  const episodes = a.episodes ?? [];
+  let maxNumbered = 0;
+  let seenCount = 0;
+  for (const e of episodes) {
+    if (!e.seen) continue;
+    seenCount++;
+    if ((e.episodeNumber ?? 0) > maxNumbered) maxNumbered = e.episodeNumber!;
   }
   for (const t of a.tracking ?? []) {
-    if ((t.lastEpisodeSeen ?? 0) > max) max = t.lastEpisodeSeen!;
+    if ((t.lastEpisodeSeen ?? 0) > maxNumbered) maxNumbered = t.lastEpisodeSeen!;
   }
-  return Math.floor(max);
+  // Real numbered series: the highest seen episode number is the precise
+  // signal. Single-video/movie-style entries (common on non-series sources)
+  // carry a sentinel episode number (observed: -1) with no real ordinal, so
+  // a seen-but-unnumbered episode would otherwise never register - fall
+  // back to a plain count of seen episodes and take whichever is higher.
+  return Math.floor(Math.max(maxNumbered, seenCount));
 }
 
 export interface MihonProgress {
