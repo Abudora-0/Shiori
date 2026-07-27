@@ -7,7 +7,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { Tv } from "lucide-react";
 import { db } from "@/lib/db";
 import { gql } from "@/lib/anilist";
-import { displayTitle } from "@/lib/format";
+import { displayTitle, isWatched } from "@/lib/format";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { Cover } from "@/components/ui/Cover";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -60,7 +60,7 @@ export default function CalendarPage() {
       const s = series[i];
       if (
         s &&
-        s.kind === "ANIME" &&
+        isWatched(s.kind) &&
         s.id > 0 &&
         entries[i].status !== "dropped" &&
         (s.mediaStatus === "RELEASING" || s.mediaStatus === "NOT_YET_RELEASED")

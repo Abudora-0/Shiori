@@ -1,7 +1,11 @@
 import { db } from "./db";
 import { resolveByAniListIds } from "./anilist";
-import { displayTitle } from "./format";
-import { HARD_ADULT_SOURCES } from "./importers/mihon";
+import { displayTitle, isWatched } from "./format";
+import {
+  EXCLUDED_ANIME_SOURCES,
+  guessAnimeKind,
+  HARD_ADULT_SOURCES,
+} from "./importers/mihon";
 import { DOUJIN_SOURCE_NAME_RE } from "./doujin-detect";
 import type { LibraryEntry, MediaKind, Series } from "./types";
 
@@ -11,10 +15,11 @@ import type { LibraryEntry, MediaKind, Series } from "./types";
  *   series without a working cover (mostly Mihon local entries).
  * - reclassifyLibrary: re-resolves AniList-known series (picking up isAdult →
  *   PORNHWA) and applies adult-genre heuristics to local entries.
- * - findDoujinPollution / removeDoujinPollution: cleans up doujin entries
- *   that landed in the regular Library from a backup imported before the
- *   Mihon importer started excluding doujin sources (they belong in the
- *   Annex only, via the separate doujin-backup import).
+ * - findDoujinPollution / findExcludedAnimePollution / removeLibrarySeries:
+ *   clean up entries that landed in the regular Library from a backup
+ *   imported before the Mihon importer started excluding doujin sources
+ *   (belong in the Annex only) and booru/clip sources like Rule34 (not
+ *   episodic series at all - don't belong anywhere in the Library).
  */
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -125,7 +130,7 @@ async function coverFromAnimePlanet(
   title: string,
   kind: MediaKind
 ): Promise<string | undefined> {
-  const type = kind === "ANIME" ? "anime" : "manga";
+  const type = isWatched(kind) ? "anime" : "manga";
   const res = await fetch(
     `/api/proxy/animeplanet?title=${encodeURIComponent(title)}&type=${type}`,
     { signal: AbortSignal.timeout(NET_TIMEOUT) }
@@ -261,8 +266,8 @@ export async function fixMissingCovers(
       } catch {
         /* provider down */
       }
-      if (!cover && s.kind !== "PORNHWA") {
-        // Anime-Planet doesn't carry pornhwa - skip the wasted request
+      if (!cover && s.kind !== "PORNHWA" && s.kind !== "HENTAI") {
+        // Anime-Planet doesn't carry adult content - skip the wasted request
         try {
           cover = await coverFromAnimePlanet(title, s.kind);
         } catch {
@@ -313,17 +318,19 @@ export interface ReclassifyResult {
   checked: number;
   updated: number;
   pornhwa: number;
+  hentai: number;
 }
 
 export async function reclassifyLibrary(
   onProgress?: (p: ReclassifyProgress) => void
 ): Promise<ReclassifyResult> {
   const all = await db.series.toArray();
-  const result: ReclassifyResult = { checked: all.length, updated: 0, pornhwa: 0 };
+  const result: ReclassifyResult = { checked: all.length, updated: 0, pornhwa: 0, hentai: 0 };
 
-  // AniList-known manga-side series: re-fetch to pick up isAdult (→ PORNHWA)
-  // and any metadata that predates newer classification logic.
-  const remote = all.filter((s) => s.id > 0 && s.kind !== "ANIME");
+  // AniList-known series: re-fetch to pick up isAdult (→ Pornhwa on the manga
+  // side, Hentai on the anime side) and any metadata that predates newer
+  // classification logic.
+  const remote = all.filter((s) => s.id > 0);
   onProgress?.({ phase: "anilist", count: 0, total: remote.length });
   const fresh = await resolveByAniListIds(remote.map((s) => s.id));
   onProgress?.({ phase: "anilist", count: remote.length, total: remote.length });
@@ -335,17 +342,29 @@ export async function reclassifyLibrary(
     if (f.kind !== s.kind) {
       result.updated++;
       if (f.kind === "PORNHWA") result.pornhwa++;
+      if (f.kind === "HENTAI") result.hentai++;
     }
     toPut.push(f);
   }
 
   // Local entries: genre heuristics only (no external source of truth).
-  // Also self-corrects earlier over-eager classifications: local PORNHWA
-  // without a genuinely adult tag reverts to MANHWA.
+  // Also self-corrects earlier over-eager classifications: local Pornhwa/
+  // Hentai without a genuinely adult tag reverts to Manhwa/Anime.
   const locals = all.filter((s) => s.id < 0);
   onProgress?.({ phase: "local", count: 0, total: locals.length });
   for (const s of locals) {
     const tagNames = s.tags.map((t) => t.name);
+
+    if (s.kind === "ANIME" || s.kind === "HENTAI") {
+      const next = guessAnimeKind([...s.genres, ...tagNames], s.sourceName);
+      if (next !== s.kind) {
+        toPut.push({ ...s, kind: next });
+        result.updated++;
+        if (next === "HENTAI") result.hentai++;
+      }
+      continue;
+    }
+
     // Adult when the genres say so, or the entry came from an adult-only source
     const hardSource = !!s.sourceName && HARD_ADULT_SOURCES.test(s.sourceName);
     const adult = hardSource || looksAdult([...s.genres, ...tagNames]);
@@ -398,8 +417,30 @@ export async function findDoujinPollution(): Promise<DoujinPollutionEntry[]> {
     .map((series) => ({ series, entry: entryBySeries.get(series.id) }));
 }
 
+/**
+ * Local (hashed-id) anime Library entries whose Mihon source is a booru/clip
+ * aggregator (Rule34 and similar) - not real episodic anime, only present
+ * from a backup imported before importMihonBackup started excluding them.
+ */
+export async function findExcludedAnimePollution(): Promise<DoujinPollutionEntry[]> {
+  const [allSeries, allEntries] = await Promise.all([
+    db.series.toArray(),
+    db.entries.toArray(),
+  ]);
+  const entryBySeries = new Map(allEntries.map((e) => [e.seriesId, e]));
+  return allSeries
+    .filter(
+      (s) =>
+        s.id <= -3_000_000_000 &&
+        isWatched(s.kind) &&
+        s.sourceName &&
+        EXCLUDED_ANIME_SOURCES.test(s.sourceName)
+    )
+    .map((series) => ({ series, entry: entryBySeries.get(series.id) }));
+}
+
 /** Deletes the given series entirely (entry, reviews, notes, extras, updates, list refs). */
-export async function removeDoujinPollution(seriesIds: number[]): Promise<number> {
+export async function removeLibrarySeries(seriesIds: number[]): Promise<number> {
   await db.transaction(
     "rw",
     [db.series, db.entries, db.reviews, db.notes, db.extras, db.lists, db.updates],

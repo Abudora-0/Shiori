@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   guessKind,
+  guessAnimeKind,
   readProgress,
   readEpisodeProgress,
   HARD_ADULT_SOURCES,
+  HARD_ADULT_ANIME_SOURCES,
+  EXCLUDED_ANIME_SOURCES,
   type RawBackupManga,
   type RawBackupAnime,
 } from "./mihon";
@@ -34,6 +37,40 @@ describe("guessKind", () => {
   it("HARD_ADULT_SOURCES matches the sites guessKind relies on", () => {
     expect(HARD_ADULT_SOURCES.test("Manhwa18")).toBe(true);
     expect(HARD_ADULT_SOURCES.test("Toonily")).toBe(false);
+  });
+});
+
+describe("guessAnimeKind", () => {
+  it("classifies hard-adult anime sources as Hentai regardless of genre tags", () => {
+    expect(guessAnimeKind([], "Hanime")).toBe("HENTAI");
+    expect(guessAnimeKind(["Action"], "HentaiStream")).toBe("HENTAI");
+  });
+
+  it("classifies by an explicit adult genre tag with no source name", () => {
+    expect(guessAnimeKind(["Hentai"], undefined)).toBe("HENTAI");
+    expect(guessAnimeKind(["Adult"], undefined)).toBe("HENTAI");
+  });
+
+  it("does not treat ordinary anime genres as adult", () => {
+    expect(guessAnimeKind(["Action", "Ecchi", "Comedy"], "Crunchyroll")).toBe("ANIME");
+    expect(guessAnimeKind([], undefined)).toBe("ANIME");
+  });
+
+  it("HARD_ADULT_ANIME_SOURCES matches the sites guessAnimeKind relies on", () => {
+    expect(HARD_ADULT_ANIME_SOURCES.test("Hanime")).toBe(true);
+    expect(HARD_ADULT_ANIME_SOURCES.test("Crunchyroll")).toBe(false);
+  });
+});
+
+describe("EXCLUDED_ANIME_SOURCES", () => {
+  it("matches Rule34 booru/clip sources", () => {
+    expect(EXCLUDED_ANIME_SOURCES.test("Rule34video")).toBe(true);
+    expect(EXCLUDED_ANIME_SOURCES.test("Rule 34")).toBe(true);
+  });
+
+  it("does not match ordinary anime sources", () => {
+    expect(EXCLUDED_ANIME_SOURCES.test("Hanime")).toBe(false);
+    expect(EXCLUDED_ANIME_SOURCES.test("Crunchyroll")).toBe(false);
   });
 });
 

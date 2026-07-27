@@ -124,7 +124,7 @@ function kitsuMediaToSeries(media: KitsuResource, kind: "anime" | "manga"): Seri
         : kitsuMangaFallbackId(Number(media.id)),
     kind:
       kind === "anime"
-        ? "ANIME"
+        ? (a.ageRating === "R18" ? "HENTAI" : "ANIME")
         : subtype === "manhwa"
           ? (a.ageRating === "R18" ? "PORNHWA" : "MANHWA")
           : subtype === "manhua"

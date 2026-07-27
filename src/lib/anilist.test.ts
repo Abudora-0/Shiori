@@ -6,6 +6,11 @@ describe("classifyKind", () => {
     expect(classifyKind({ type: "ANIME", countryOfOrigin: "JP" })).toBe("ANIME");
   });
 
+  it("splits anime into Anime vs Hentai by the isAdult flag", () => {
+    expect(classifyKind({ type: "ANIME", isAdult: true })).toBe("HENTAI");
+    expect(classifyKind({ type: "ANIME", isAdult: false })).toBe("ANIME");
+  });
+
   it("splits Korean manga into Manhwa vs Pornhwa by the isAdult flag", () => {
     expect(classifyKind({ type: "MANGA", countryOfOrigin: "KR" })).toBe("MANHWA");
     expect(

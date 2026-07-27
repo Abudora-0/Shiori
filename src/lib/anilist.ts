@@ -137,7 +137,7 @@ export function classifyKind(media: {
   countryOfOrigin?: string;
   isAdult?: boolean;
 }): MediaKind {
-  if (media.type === "ANIME") return "ANIME";
+  if (media.type === "ANIME") return media.isAdult ? "HENTAI" : "ANIME";
   if (media.countryOfOrigin === "KR") return media.isAdult ? "PORNHWA" : "MANHWA";
   if (media.countryOfOrigin === "CN" || media.countryOfOrigin === "TW")
     return "MANHUA";

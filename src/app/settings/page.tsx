@@ -670,7 +670,7 @@ function MaintenanceSection() {
         )
       );
       setTypeState(
-        `Done - ${result.updated} types changed, ${result.pornhwa} moved to Pornhwa.`
+        `Done - ${result.updated} types changed, ${result.pornhwa} moved to Pornhwa, ${result.hentai} moved to Hentai.`
       );
     } catch (e) {
       setTypeState(e instanceof Error ? e.message : String(e));
@@ -713,9 +713,9 @@ function MaintenanceSection() {
           <div className="flex items-start justify-between gap-4">
             <p className="text-xs leading-relaxed text-muted">
               <span className="font-semibold text-text">Re-classify types</span> -
-              refreshes manga-side series from AniList (adult manhwa → Pornhwa) and
-              applies adult-tag detection to local entries. Overwrites manual type
-              changes on AniList-known series.
+              refreshes AniList-known series (adult manhwa → Pornhwa, adult anime →
+              Hentai) and applies adult-tag detection to local entries. Overwrites
+              manual type changes on AniList-known series.
             </p>
             <button
               onClick={runReclassify}

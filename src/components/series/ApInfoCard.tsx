@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ExternalLink, TriangleAlert } from "lucide-react";
-import { displayTitle } from "@/lib/format";
+import { displayTitle, isWatched } from "@/lib/format";
 import type { Series } from "@/lib/types";
 
 interface ApInfo {
@@ -22,7 +22,7 @@ export function ApInfoCard({ series }: { series: Series }) {
     staleTime: Infinity,
     retry: 0,
     queryFn: async () => {
-      const type = series.kind === "ANIME" ? "anime" : "manga";
+      const type = isWatched(series.kind) ? "anime" : "manga";
       const res = await fetch(
         `/api/proxy/animeplanet?title=${encodeURIComponent(displayTitle(series.title))}&type=${type}`
       );

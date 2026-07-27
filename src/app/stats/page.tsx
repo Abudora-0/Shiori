@@ -10,6 +10,7 @@ import { db } from "@/lib/db";
 import { useLibrary } from "@/lib/hooks";
 import {
   ALL_STATUSES,
+  isWatched,
   KIND_LABEL,
   statusLabel,
   STATUS_COLOR,
@@ -18,6 +19,7 @@ import type { EntryStatus } from "@/lib/types";
 
 const KIND_COLORS: Record<string, string> = {
   ANIME: "var(--mizu)",
+  HENTAI: "#c9457a",
   MANGA: "var(--vermillion)",
   MANHWA: "var(--sakura)",
   PORNHWA: "#e05299",
@@ -60,8 +62,8 @@ export default function StatsPage() {
 
   const s = useMemo(() => {
     if (!items) return undefined;
-    const anime = items.filter((i) => i.series.kind === "ANIME");
-    const reading = items.filter((i) => i.series.kind !== "ANIME");
+    const anime = items.filter((i) => isWatched(i.series.kind));
+    const reading = items.filter((i) => !isWatched(i.series.kind));
     const rated = items.filter((i) => (i.entry.rating ?? 0) > 0);
 
     const episodes = anime.reduce((t, i) => t + i.entry.progress, 0);

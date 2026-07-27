@@ -1,6 +1,6 @@
 import { db, getSetting, setSetting } from "./db";
 import { fetchChapters } from "./chapters";
-import { displayTitle } from "./format";
+import { displayTitle, isWatched } from "./format";
 
 /**
  * Updates feed - walks every manga-side series you're currently reading,
@@ -30,7 +30,7 @@ export async function checkForUpdates(
 
   const targets = entries
     .map((entry, i) => ({ entry, series: series[i] }))
-    .filter((x) => x.series && x.series.kind !== "ANIME") as {
+    .filter((x) => x.series && !isWatched(x.series.kind)) as {
     entry: (typeof entries)[number];
     series: NonNullable<(typeof series)[number]>;
   }[];

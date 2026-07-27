@@ -9,15 +9,15 @@ import { CoverCard } from "@/components/library/CoverCard";
 import { EditEntryModal } from "@/components/library/EditEntryModal";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
 import { useLibrary, type LibraryItem } from "@/lib/hooks";
-import { displayTitle, formatDate, statusLabel } from "@/lib/format";
+import { displayTitle, formatDate, isWatched, statusLabel } from "@/lib/format";
 
 export default function Dashboard() {
   const items = useLibrary();
 
   const stats = useMemo(() => {
     if (!items) return undefined;
-    const anime = items.filter((i) => i.series.kind === "ANIME");
-    const reading = items.filter((i) => i.series.kind !== "ANIME");
+    const anime = items.filter((i) => isWatched(i.series.kind));
+    const reading = items.filter((i) => !isWatched(i.series.kind));
     const rated = items.filter((i) => (i.entry.rating ?? 0) > 0);
     const mean =
       rated.length > 0
@@ -31,7 +31,7 @@ export default function Dashboard() {
   const watching = useMemo(
     () =>
       items
-        ?.filter((i) => i.entry.status === "current" && i.series.kind === "ANIME")
+        ?.filter((i) => i.entry.status === "current" && isWatched(i.series.kind))
         .sort((a, b) => b.entry.updatedAt - a.entry.updatedAt)
         .slice(0, 14),
     [items]
@@ -40,7 +40,7 @@ export default function Dashboard() {
   const reading = useMemo(
     () =>
       items
-        ?.filter((i) => i.entry.status === "current" && i.series.kind !== "ANIME")
+        ?.filter((i) => i.entry.status === "current" && !isWatched(i.series.kind))
         .sort((a, b) => b.entry.updatedAt - a.entry.updatedAt)
         .slice(0, 14),
     [items]

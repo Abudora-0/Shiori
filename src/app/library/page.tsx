@@ -18,6 +18,7 @@ import {
   ALL_STATUSES,
   displayTitle,
   formatRating,
+  isWatched,
   KIND_LABEL,
   maxProgress,
   progressUnit,
@@ -145,7 +146,10 @@ export default function LibraryPage() {
               active={ui.statusFilter === s}
               onClick={() => ui.setStatusFilter(s)}
             >
-              {statusLabel(s, ui.kindTab === "ANIME" ? "ANIME" : "MANGA")}
+              {statusLabel(
+                s,
+                ui.kindTab !== "ALL" && isWatched(ui.kindTab) ? "ANIME" : "MANGA"
+              )}
             </Chip>
           ))}
         </div>

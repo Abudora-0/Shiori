@@ -10,7 +10,7 @@ import { gql, MEDIA_FIELDS, mapMediaToSeries, type RawMedia } from "@/lib/anilis
 import { useLibraryIds } from "@/lib/hooks";
 import type { Series } from "@/lib/types";
 
-type Tab = "season" | "anime" | "manga" | "manhwa" | "pornhwa";
+type Tab = "season" | "anime" | "manga" | "manhwa" | "pornhwa" | "hentai";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "season", label: "This Season" },
@@ -18,6 +18,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "manga", label: "Trending Manga" },
   { id: "manhwa", label: "Trending Manhwa" },
   { id: "pornhwa", label: "Pornhwa" },
+  { id: "hentai", label: "Hentai" },
 ];
 
 function currentSeason(): { season: string; year: number } {
@@ -45,6 +46,10 @@ async function fetchPage(tab: Tab, page: number): Promise<{ series: Series[]; ha
     pornhwa: {
       vars: {},
       filter: 'type: MANGA, countryOfOrigin: "KR", sort: TRENDING_DESC, isAdult: true',
+    },
+    hentai: {
+      vars: {},
+      filter: "type: ANIME, sort: TRENDING_DESC, isAdult: true",
     },
   };
   const { vars, filter } = args[tab];

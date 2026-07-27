@@ -11,6 +11,7 @@ import { useEntry, useSeries } from "@/lib/hooks";
 import { useUiStore } from "@/lib/store";
 import {
   displayTitle,
+  isWatched,
   KIND_LABEL,
   maxProgress,
   progressUnit,
@@ -169,7 +170,7 @@ function SeriesDetail({ series, inLibrary }: { series: Series; inLibrary: boolea
               </div>
             )}
             <div className="mt-2 text-xs text-faint">
-              {series.kind === "ANIME"
+              {isWatched(series.kind)
                 ? [
                     series.episodes && `${series.episodes} episodes`,
                     series.studios?.length && series.studios.join(", "),
@@ -322,7 +323,7 @@ function SeriesDetail({ series, inLibrary }: { series: Series; inLibrary: boolea
         <ExtraSections seriesId={series.id} />
 
         {/* Chapters (manga kinds only) */}
-        {series.kind !== "ANIME" && (
+        {!isWatched(series.kind) && (
           <div className="mt-10">
             <ChapterList series={series} />
           </div>

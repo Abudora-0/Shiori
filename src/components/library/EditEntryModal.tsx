@@ -12,6 +12,7 @@ import {
   ALL_KINDS,
   ALL_STATUSES,
   displayTitle,
+  isWatched,
   KIND_LABEL,
   maxProgress,
   statusLabel,
@@ -53,7 +54,7 @@ export function EditEntryModal() {
   if (seriesId == null) return null;
 
   const total = series ? maxProgress(series) : undefined;
-  const isAnime = series?.kind === "ANIME";
+  const isAnime = !!series && isWatched(series.kind);
 
   async function save() {
     if (!entry) return;

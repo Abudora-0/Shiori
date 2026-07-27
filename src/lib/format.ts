@@ -13,6 +13,7 @@ export function subTitle(title: SeriesTitle): string | undefined {
 
 export const KIND_LABEL: Record<MediaKind, string> = {
   ANIME: "Anime",
+  HENTAI: "Hentai",
   MANGA: "Manga",
   MANHWA: "Manhwa",
   PORNHWA: "Pornhwa",
@@ -21,16 +22,22 @@ export const KIND_LABEL: Record<MediaKind, string> = {
 
 export const KIND_KANJI: Record<MediaKind, string> = {
   ANIME: "アニメ",
+  HENTAI: "18禁",
   MANGA: "漫画",
   MANHWA: "만화",
   PORNHWA: "19금",
   MANHUA: "漫畫",
 };
 
+/** Episode-based kinds (progress in "ep", not "ch") - Anime and its adult shelf. */
+export function isWatched(kind: MediaKind): boolean {
+  return kind === "ANIME" || kind === "HENTAI";
+}
+
 export function statusKanji(status: EntryStatus, kind: MediaKind): string {
   switch (status) {
     case "current":
-      return kind === "ANIME" ? "視聴中" : "読書中";
+      return isWatched(kind) ? "視聴中" : "読書中";
     case "completed":
       return "完";
     case "paused":
@@ -46,7 +53,7 @@ export function statusKanji(status: EntryStatus, kind: MediaKind): string {
 export function statusShort(status: EntryStatus, kind: MediaKind): string {
   switch (status) {
     case "current":
-      return kind === "ANIME" ? "Watching" : "Reading";
+      return isWatched(kind) ? "Watching" : "Reading";
     case "completed":
       return "Done";
     case "paused":
@@ -61,7 +68,7 @@ export function statusShort(status: EntryStatus, kind: MediaKind): string {
 export function statusLabel(status: EntryStatus, kind: MediaKind): string {
   switch (status) {
     case "current":
-      return kind === "ANIME" ? "Watching" : "Reading";
+      return isWatched(kind) ? "Watching" : "Reading";
     case "completed":
       return "Completed";
     case "paused":
@@ -91,6 +98,7 @@ export const ALL_STATUSES: EntryStatus[] = [
 
 export const ALL_KINDS: MediaKind[] = [
   "ANIME",
+  "HENTAI",
   "MANGA",
   "MANHWA",
   "PORNHWA",
@@ -104,13 +112,13 @@ export function formatRating(rating?: number): string {
 }
 
 export function maxProgress(series: Series): number | undefined {
-  return series.kind === "ANIME"
+  return isWatched(series.kind)
     ? series.episodes ?? undefined
     : series.chapters ?? undefined;
 }
 
 export function progressUnit(kind: MediaKind): string {
-  return kind === "ANIME" ? "ep" : "ch";
+  return isWatched(kind) ? "ep" : "ch";
 }
 
 export function stripHtml(html?: string): string {

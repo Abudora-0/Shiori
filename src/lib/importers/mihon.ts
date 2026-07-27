@@ -266,10 +266,37 @@ export function readProgress(m: RawBackupManga): number {
   return Math.floor(max);
 }
 
+/**
+ * Anime extensions that host ONLY adult content - safe to classify on name
+ * alone (mirrors HARD_ADULT_SOURCES on the manga side).
+ */
+export const HARD_ADULT_ANIME_SOURCES = /hentai|hanime/i;
+
+/**
+ * Booru/clip aggregators (Rule34 and similar) - not episodic series at all,
+ * just individual NSFW video clips. These don't belong in the Library under
+ * any kind (Anime or Hentai), so they're excluded from import entirely
+ * rather than classified.
+ */
+export const EXCLUDED_ANIME_SOURCES = /rule ?34/i;
+
+export function guessAnimeKind(genres: string[], sourceName?: string): MediaKind {
+  if (sourceName && HARD_ADULT_ANIME_SOURCES.test(sourceName)) return "HENTAI";
+  const g = genres.map((x) => x.toLowerCase());
+  const adult = g.some(
+    (x) =>
+      x.includes("hentai") ||
+      x.includes("adult") ||
+      x.includes("18+") ||
+      x.includes("erotica")
+  );
+  return adult ? "HENTAI" : "ANIME";
+}
+
 function localAnimeSeries(a: RawBackupAnime, sourceName?: string): Series {
   return {
     id: localFallbackId(`aniyomi:${a.source ?? 0}:${a.url ?? a.title ?? ""}`),
-    kind: "ANIME",
+    kind: guessAnimeKind(a.genre ?? [], sourceName),
     sourceName,
     title: { romaji: a.title || "Untitled" },
     cover: a.thumbnailUrl,
@@ -327,12 +354,17 @@ export async function importMihonBackup(
       !detectDoujin(m.url, m.source ? sources.get(m.source) : undefined)
   );
   // Empty for a plain Tachiyomi/Mihon backup - only present in Aniyomi's fork.
-  const animes = allAnimes.filter(
-    (a) =>
+  // Booru/clip aggregators (Rule34 and similar) aren't episodic anime at all -
+  // excluded outright rather than classified as Anime or Hentai.
+  const animes = allAnimes.filter((a) => {
+    const sourceName = a.source ? animeSources.get(a.source) : undefined;
+    return (
       a.favorite !== false &&
       (a.title || a.url) &&
-      !detectDoujin(a.url, a.source ? animeSources.get(a.source) : undefined)
-  );
+      !detectDoujin(a.url, sourceName) &&
+      !(sourceName && EXCLUDED_ANIME_SOURCES.test(sourceName))
+    );
+  });
   const totalCount = mangas.length + animes.length;
   onProgress?.({ phase: "parsing", count: totalCount, total: totalCount });
 

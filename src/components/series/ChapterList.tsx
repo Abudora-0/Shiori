@@ -6,7 +6,7 @@ import { BookOpen, CheckCircle2, ChevronDown } from "lucide-react";
 import { db, logActivity } from "@/lib/db";
 import { fetchChapters } from "@/lib/chapters";
 import { useEntry } from "@/lib/hooks";
-import { formatDate } from "@/lib/format";
+import { formatDate, isWatched } from "@/lib/format";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { Series } from "@/lib/types";
 
@@ -20,12 +20,12 @@ export function ChapterList({ series }: { series: Series }) {
 
   const { data, isLoading } = useQuery({
     queryKey: ["chapters", series.id],
-    enabled: open && series.kind !== "ANIME",
+    enabled: open && !isWatched(series.kind),
     staleTime: Infinity,
     queryFn: () => fetchChapters(series),
   });
 
-  if (series.kind === "ANIME") return null;
+  if (isWatched(series.kind)) return null;
 
   async function markReadUpTo(chapterNum: number) {
     if (!entry) return;

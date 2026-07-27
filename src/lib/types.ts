@@ -1,8 +1,9 @@
 /**
  * Media classification. AniList "MANGA" is split by country of origin;
- * adult Korean webtoons get their own PORNHWA shelf.
+ * adult Korean webtoons get their own PORNHWA shelf, and adult anime gets
+ * its own HENTAI shelf.
  */
-export type MediaKind = "ANIME" | "MANGA" | "MANHWA" | "PORNHWA" | "MANHUA";
+export type MediaKind = "ANIME" | "HENTAI" | "MANGA" | "MANHWA" | "PORNHWA" | "MANHUA";
 
 /** "current" means watching (anime) or reading (everything else). */
 export type EntryStatus =
