@@ -13,6 +13,7 @@ import {
   displayTitle,
   isAdultKind,
   isWatched,
+  KIND_KANJI,
   KIND_LABEL,
   maxProgress,
   progressUnit,
@@ -79,6 +80,7 @@ export default function SeriesPage() {
       <PinGate
         title={`Unlock ${KIND_LABEL[series.kind]}`}
         subtitle="This series is on the Hentai/Pornhwa shelf, which hides behind the Annex PIN. It locks again when the browser closes."
+        kanji={KIND_KANJI[series.kind]}
       >
         <SeriesDetail series={series} inLibrary={!!entry} />
       </PinGate>

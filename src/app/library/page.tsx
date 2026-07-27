@@ -21,6 +21,7 @@ import {
   formatRating,
   isAdultKind,
   isWatched,
+  KIND_KANJI,
   KIND_LABEL,
   maxProgress,
   progressUnit,
@@ -205,6 +206,7 @@ export default function LibraryPage() {
         <PinGate
           title={`Unlock ${KIND_LABEL[ui.kindTab]}`}
           subtitle="This shelf hides behind the Annex PIN, same as the doujin shelf. It locks again when the browser closes."
+          kanji={KIND_KANJI[ui.kindTab]}
         >
           {null}
         </PinGate>

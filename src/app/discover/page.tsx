@@ -10,6 +10,7 @@ import { PinGate } from "@/components/annex/PinGate";
 import { gql, MEDIA_FIELDS, mapMediaToSeries, type RawMedia } from "@/lib/anilist";
 import { useLibraryIds } from "@/lib/hooks";
 import { useUiStore } from "@/lib/store";
+import { KIND_KANJI } from "@/lib/format";
 import type { Series } from "@/lib/types";
 
 type Tab = "season" | "anime" | "manga" | "manhwa" | "pornhwa" | "hentai";
@@ -24,6 +25,10 @@ const TABS: { id: Tab; label: string }[] = [
 ];
 
 const ADULT_TABS = new Set<Tab>(["pornhwa", "hentai"]);
+const ADULT_TAB_KANJI: Partial<Record<Tab, string>> = {
+  pornhwa: KIND_KANJI.PORNHWA,
+  hentai: KIND_KANJI.HENTAI,
+};
 
 function currentSeason(): { season: string; year: number } {
   const now = new Date();
@@ -125,6 +130,7 @@ export default function DiscoverPage() {
         <PinGate
           title={`Unlock ${TABS.find((t) => t.id === tab)?.label}`}
           subtitle="This shelf hides behind the Annex PIN, same as the doujin shelf. It locks again when the browser closes."
+          kanji={ADULT_TAB_KANJI[tab]}
         >
           {null}
         </PinGate>
