@@ -37,9 +37,20 @@ export function PinGate({
   if (state === "loading") return null;
 
   return (
-    <div className="flex min-h-[70dvh] items-center justify-center px-4 py-10">
-      <div className="relative w-full max-w-sm">
-        <div className="pointer-events-none absolute inset-0 rounded-[2rem] bg-vermillion/15 opacity-60 blur-3xl" />
+    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4 py-10">
+      {/* Full-bleed backdrop - waves + a couple of oversized, faint kanji so
+          the space around the card doesn't read as an empty page. */}
+      <div className="seigaiha pointer-events-none absolute inset-0 opacity-[0.05]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,var(--ink-950)_78%)]" />
+      <span className="kanji-watermark pointer-events-none -left-16 top-[10%] text-[16rem] leading-none opacity-70 md:text-[20rem]">
+        鍵
+      </span>
+      <span className="kanji-watermark pointer-events-none -right-20 bottom-[6%] text-[14rem] leading-none opacity-70 md:text-[18rem]">
+        錠
+      </span>
+
+      <div className="relative z-10 w-full max-w-sm">
+        <div className="pointer-events-none absolute inset-0 rounded-[2rem] bg-vermillion/20 opacity-70 blur-3xl" />
         <div className="seigaiha relative overflow-hidden rounded-2xl border border-line-strong bg-ink-850 p-8 shadow-2xl">
           <div className="ink-stroke absolute inset-x-0 top-0 h-[3px]" />
           <div className="pointer-events-none absolute inset-0 bg-ink-850/85" />
