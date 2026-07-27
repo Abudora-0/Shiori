@@ -150,6 +150,36 @@ export interface DoujinBackupResult {
   scanned: number;
 }
 
+/**
+ * Runs `worker` over `items` with at most `concurrency` in flight at once -
+ * a simple pull-based pool (each slot grabs the next index when it finishes)
+ * rather than chunking, so one slow item can't stall the others.
+ */
+async function runPool<T>(
+  items: T[],
+  concurrency: number,
+  worker: (item: T) => Promise<void>
+): Promise<void> {
+  let next = 0;
+  async function slot() {
+    for (;;) {
+      const i = next++;
+      if (i >= items.length) return;
+      await worker(items[i]);
+    }
+  }
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, items.length) }, slot)
+  );
+}
+
+// Per-site concurrency for metadata fetches. Sites are independent servers,
+// so different sources are fetched fully in parallel; this only limits how
+// many requests hit any *one* of them at once, so a huge backup doesn't
+// take hours from the per-item throttle alone but also doesn't burst any
+// single site hard enough to risk getting rate-limited or blocked.
+const CONCURRENCY_PER_SOURCE = 3;
+
 export async function importDoujinsFromBackup(
   buffer: ArrayBuffer,
   onProgress?: (p: DoujinBackupProgress) => void
@@ -178,17 +208,25 @@ export async function importDoujinsFromBackup(
     scanned: totalManga,
   };
 
-  for (let i = 0; i < candidates.length; i++) {
-    const c = candidates[i];
+  const bySource = new Map<DoujinSource, DoujinCandidate[]>();
+  for (const c of candidates) {
+    const group = bySource.get(c.source);
+    if (group) group.push(c);
+    else bySource.set(c.source, [c]);
+  }
+
+  let processed = 0;
+  async function handleOne(c: DoujinCandidate) {
+    processed++;
     onProgress?.({
       phase: "fetching",
-      count: i + 1,
+      count: processed,
       total: candidates.length,
       current: c.title ?? `${c.source} #${c.id}`,
     });
     if (existing.has(`${c.source}:${c.id}`)) {
       result.skipped++;
-      continue;
+      return;
     }
     try {
       let meta: Omit<DoujinEntry, "id" | "addedAt" | "favorite">;
@@ -242,5 +280,11 @@ export async function importDoujinsFromBackup(
     }
     await sleep(400);
   }
+
+  await Promise.all(
+    [...bySource.values()].map((group) =>
+      runPool(group, CONCURRENCY_PER_SOURCE, handleOne)
+    )
+  );
   return result;
 }
