@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { guessKind, readProgress, HARD_ADULT_SOURCES, type RawBackupManga } from "./mihon";
+import {
+  guessKind,
+  readProgress,
+  readEpisodeProgress,
+  HARD_ADULT_SOURCES,
+  type RawBackupManga,
+  type RawBackupAnime,
+} from "./mihon";
 
 describe("guessKind", () => {
   it("classifies hard-adult sources as Pornhwa regardless of genre tags", () => {
@@ -68,5 +75,30 @@ describe("readProgress", () => {
 
   it("returns 0 when nothing is read", () => {
     expect(readProgress({})).toBe(0);
+  });
+});
+
+describe("readEpisodeProgress (Aniyomi anime entries)", () => {
+  it("takes the highest seen episode number", () => {
+    const a: RawBackupAnime = {
+      episodes: [
+        { seen: true, episodeNumber: 5 },
+        { seen: true, episodeNumber: 12 },
+        { seen: false, episodeNumber: 20 },
+      ],
+    };
+    expect(readEpisodeProgress(a)).toBe(12);
+  });
+
+  it("takes the maximum lastEpisodeSeen across all trackers", () => {
+    const a: RawBackupAnime = {
+      episodes: [],
+      tracking: [{ lastEpisodeSeen: 5 }, { lastEpisodeSeen: 50 }, { lastEpisodeSeen: 20 }],
+    };
+    expect(readEpisodeProgress(a)).toBe(50);
+  });
+
+  it("returns 0 when nothing is watched", () => {
+    expect(readEpisodeProgress({})).toBe(0);
   });
 });

@@ -20,6 +20,13 @@ syntax = "proto2";
 message Backup {
   repeated BackupManga backupManga = 1;
   repeated BackupSource backupSources = 101;
+  // Aniyomi (manga+anime Mihon fork) extends the same container with an
+  // anime side, bumping field numbers by 200/300 to avoid colliding with
+  // the manga ones above. Absent in a plain Tachiyomi/Mihon backup, in
+  // which case these just decode as empty - best-effort from Aniyomi's
+  // public schema, unverified against a real anime backup file.
+  repeated BackupAnime backupAnime = 201;
+  repeated BackupSource backupAnimeSources = 301;
 }
 message BackupSource {
   optional string name = 1;
@@ -65,6 +72,44 @@ message BackupTracking {
   optional int64 finishedReadingDate = 11;
   optional int64 mediaId = 100;
 }
+message BackupAnime {
+  optional int64 source = 1;
+  optional string url = 2;
+  optional string title = 3;
+  optional string artist = 4;
+  optional string author = 5;
+  optional string description = 6;
+  repeated string genre = 7;
+  optional int32 status = 8;
+  optional string thumbnailUrl = 9;
+  optional int64 dateAdded = 13;
+  repeated BackupEpisode episodes = 16;
+  repeated BackupAnimeTracking tracking = 18;
+  optional bool favorite = 100;
+}
+message BackupEpisode {
+  optional string url = 1;
+  optional string name = 2;
+  optional bool seen = 4;
+  optional bool bookmark = 5;
+  optional int64 dateFetch = 7;
+  optional int64 dateUpload = 8;
+  optional float episodeNumber = 9;
+  optional int64 sourceOrder = 10;
+}
+message BackupAnimeTracking {
+  optional int32 syncId = 1;
+  optional int64 libraryId = 2;
+  optional string trackingUrl = 4;
+  optional string title = 5;
+  optional float lastEpisodeSeen = 6;
+  optional int32 totalEpisodes = 7;
+  optional float score = 8;
+  optional int32 status = 9;
+  optional int64 startedWatchingDate = 10;
+  optional int64 finishedWatchingDate = 11;
+  optional int64 mediaId = 100;
+}
 `;
 
 export interface RawBackupManga {
@@ -93,10 +138,38 @@ export interface RawBackupManga {
   favorite?: boolean;
 }
 
+export interface RawBackupAnime {
+  source?: string;
+  url?: string;
+  title?: string;
+  artist?: string;
+  author?: string;
+  description?: string;
+  genre?: string[];
+  thumbnailUrl?: string;
+  episodes?: {
+    seen?: boolean;
+    episodeNumber?: number;
+  }[];
+  tracking?: {
+    syncId?: number;
+    score?: number;
+    lastEpisodeSeen?: number;
+    totalEpisodes?: number;
+    mediaId?: string;
+    startedWatchingDate?: string;
+    finishedWatchingDate?: string;
+  }[];
+  favorite?: boolean;
+}
+
 export interface ParsedBackup {
   mangas: RawBackupManga[];
   /** sourceId (string) → extension name, e.g. "NHentai" */
   sources: Map<string, string>;
+  /** Empty for a plain Tachiyomi/Mihon backup - only Aniyomi's fork has these. */
+  animes: RawBackupAnime[];
+  animeSources: Map<string, string>;
 }
 
 export function parseMihonBackup(buffer: ArrayBuffer | Uint8Array): ParsedBackup {
@@ -111,12 +184,23 @@ export function parseMihonBackup(buffer: ArrayBuffer | Uint8Array): ParsedBackup
   const obj = Backup.toObject(decoded, { longs: String, defaults: false }) as {
     backupManga?: RawBackupManga[];
     backupSources?: { name?: string; sourceId?: string }[];
+    backupAnime?: RawBackupAnime[];
+    backupAnimeSources?: { name?: string; sourceId?: string }[];
   };
   const sources = new Map<string, string>();
   for (const s of obj.backupSources ?? []) {
     if (s.sourceId != null && s.name) sources.set(String(s.sourceId), s.name);
   }
-  return { mangas: obj.backupManga ?? [], sources };
+  const animeSources = new Map<string, string>();
+  for (const s of obj.backupAnimeSources ?? []) {
+    if (s.sourceId != null && s.name) animeSources.set(String(s.sourceId), s.name);
+  }
+  return {
+    mangas: obj.backupManga ?? [],
+    sources,
+    animes: obj.backupAnime ?? [],
+    animeSources,
+  };
 }
 
 /**
@@ -178,6 +262,34 @@ export function readProgress(m: RawBackupManga): number {
   return Math.floor(max);
 }
 
+function localAnimeSeries(a: RawBackupAnime, sourceName?: string): Series {
+  return {
+    id: localFallbackId(`aniyomi:${a.source ?? 0}:${a.url ?? a.title ?? ""}`),
+    kind: "ANIME",
+    sourceName,
+    title: { romaji: a.title || "Untitled" },
+    cover: a.thumbnailUrl,
+    synopsis: a.description,
+    genres: (a.genre ?? []).slice(0, 10),
+    tags: [],
+    format: "TV",
+    episodes: a.episodes?.length || undefined,
+    authors: [...new Set([a.author, a.artist].filter(Boolean))] as string[],
+    cachedAt: Date.now(),
+  };
+}
+
+export function readEpisodeProgress(a: RawBackupAnime): number {
+  let max = 0;
+  for (const e of a.episodes ?? []) {
+    if (e.seen && (e.episodeNumber ?? 0) > max) max = e.episodeNumber!;
+  }
+  for (const t of a.tracking ?? []) {
+    if ((t.lastEpisodeSeen ?? 0) > max) max = t.lastEpisodeSeen!;
+  }
+  return Math.floor(max);
+}
+
 export interface MihonProgress {
   phase: "parsing" | "resolving" | "matching";
   count: number;
@@ -189,24 +301,42 @@ export async function importMihonBackup(
   options: { matchByTitle: boolean },
   onProgress?: (p: MihonProgress) => void
 ): Promise<ImportedItem[]> {
-  const { mangas: all, sources } = parseMihonBackup(buffer);
+  const { mangas: allMangas, sources, animes: allAnimes, animeSources } =
+    parseMihonBackup(buffer);
   // favorite === false → history-only entry; undefined means true (Kotlin default)
-  const mangas = all.filter((m) => m.favorite !== false && (m.title || m.url));
-  onProgress?.({ phase: "parsing", count: mangas.length, total: mangas.length });
+  const mangas = allMangas.filter((m) => m.favorite !== false && (m.title || m.url));
+  // Empty for a plain Tachiyomi/Mihon backup - only present in Aniyomi's fork.
+  const animes = allAnimes.filter((a) => a.favorite !== false && (a.title || a.url));
+  const totalCount = mangas.length + animes.length;
+  onProgress?.({ phase: "parsing", count: totalCount, total: totalCount });
 
-  // Resolve via embedded tracker links first
+  // Resolve via embedded tracker links first (AniList ids aren't type-specific;
+  // MAL ids are resolved per media type since the same numeric id space is
+  // reused between MAL anime and manga entries)
   const alIds: number[] = [];
-  const malIds: number[] = [];
+  const malMangaIds: number[] = [];
+  const malAnimeIds: number[] = [];
   for (const m of mangas) {
     const al = m.tracking?.find((t) => t.syncId === 2 && t.mediaId);
     const mal = m.tracking?.find((t) => t.syncId === 1 && t.mediaId);
     if (al) alIds.push(Number(al.mediaId));
-    else if (mal) malIds.push(Number(mal.mediaId));
+    else if (mal) malMangaIds.push(Number(mal.mediaId));
   }
-  onProgress?.({ phase: "resolving", count: 0, total: alIds.length + malIds.length });
-  const [byAl, byMal] = await Promise.all([
+  for (const a of animes) {
+    const al = a.tracking?.find((t) => t.syncId === 2 && t.mediaId);
+    const mal = a.tracking?.find((t) => t.syncId === 1 && t.mediaId);
+    if (al) alIds.push(Number(al.mediaId));
+    else if (mal) malAnimeIds.push(Number(mal.mediaId));
+  }
+  onProgress?.({
+    phase: "resolving",
+    count: 0,
+    total: alIds.length + malMangaIds.length + malAnimeIds.length,
+  });
+  const [byAl, byMalManga, byMalAnime] = await Promise.all([
     resolveByAniListIds([...new Set(alIds)]),
-    resolveByMalIds([...new Set(malIds)], "MANGA"),
+    resolveByMalIds([...new Set(malMangaIds)], "MANGA"),
+    resolveByMalIds([...new Set(malAnimeIds)], "ANIME"),
   ]);
 
   // Optionally match the rest by title
@@ -218,7 +348,15 @@ export async function importMihonBackup(
         (t) => (t.syncId === 2 || t.syncId === 1) && t.mediaId
       );
       if (!hasTracker && m.title) {
-        queries.push({ key: String(i), title: m.title, type: "MANGA" });
+        queries.push({ key: `m${i}`, title: m.title, type: "MANGA" });
+      }
+    });
+    animes.forEach((a, i) => {
+      const hasTracker = a.tracking?.some(
+        (t) => (t.syncId === 2 || t.syncId === 1) && t.mediaId
+      );
+      if (!hasTracker && a.title) {
+        queries.push({ key: `a${i}`, title: a.title, type: "ANIME" });
       }
     });
     if (queries.length) {
@@ -231,13 +369,14 @@ export async function importMihonBackup(
 
   const now = Date.now();
   const items: ImportedItem[] = [];
+
   mangas.forEach((m, i) => {
     const al = m.tracking?.find((t) => t.syncId === 2 && t.mediaId);
     const mal = m.tracking?.find((t) => t.syncId === 1 && t.mediaId);
     const series =
       (al && byAl.get(Number(al.mediaId))) ||
-      (mal && byMal.get(Number(mal.mediaId))) ||
-      titleMatches.get(String(i)) ||
+      (mal && byMalManga.get(Number(mal.mediaId))) ||
+      titleMatches.get(`m${i}`) ||
       localSeries(m, m.source ? sources.get(m.source) : undefined);
 
     const progress = readProgress(m);
@@ -270,5 +409,46 @@ export async function importMihonBackup(
     };
     items.push({ series, entry });
   });
+
+  animes.forEach((a, i) => {
+    const al = a.tracking?.find((t) => t.syncId === 2 && t.mediaId);
+    const mal = a.tracking?.find((t) => t.syncId === 1 && t.mediaId);
+    const series =
+      (al && byAl.get(Number(al.mediaId))) ||
+      (mal && byMalAnime.get(Number(mal.mediaId))) ||
+      titleMatches.get(`a${i}`) ||
+      localAnimeSeries(a, a.source ? animeSources.get(a.source) : undefined);
+
+    const progress = readEpisodeProgress(a);
+    const total = series.episodes ?? 0;
+    const trackScore = a.tracking?.find((t) => (t.score ?? 0) > 0)?.score;
+    const started = Number(
+      a.tracking?.find((t) => Number(t.startedWatchingDate) > 0)?.startedWatchingDate ?? 0
+    );
+    const finished = Number(
+      a.tracking?.find((t) => Number(t.finishedWatchingDate) > 0)?.finishedWatchingDate ?? 0
+    );
+
+    const entry: LibraryEntry = {
+      seriesId: series.id,
+      status:
+        total > 0 && progress >= total
+          ? "completed"
+          : progress > 0
+            ? "current"
+            : "planning",
+      progress,
+      rating: trackScore ? Math.round(trackScore * 10) : undefined,
+      startedAt: started ? new Date(started).toISOString().slice(0, 10) : undefined,
+      finishedAt: finished ? new Date(finished).toISOString().slice(0, 10) : undefined,
+      repeats: 0,
+      favorite: false,
+      source: "mihon",
+      addedAt: now,
+      updatedAt: now,
+    };
+    items.push({ series, entry });
+  });
+
   return items;
 }
