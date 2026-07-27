@@ -168,12 +168,13 @@ async function runPool<T>(
   );
 }
 
-// Per-site concurrency for metadata fetches. Sites are independent servers,
-// so different sources are fetched fully in parallel; this only limits how
-// many requests hit any *one* of them at once, so a huge backup doesn't
-// take hours from the per-item throttle alone but also doesn't burst any
-// single site hard enough to risk getting rate-limited or blocked.
-const CONCURRENCY_PER_SOURCE = 5;
+// Per-site concurrency for metadata fetches. Tried 3, then 5: both got the
+// (server-side) proxy Cloudflare-blocked almost immediately on a real large
+// nhentai-heavy backup - every request past the first few silently degrades
+// to the no-metadata fallback instead of erroring loudly, which is far worse
+// than slow. Back to strictly serial per source until there's a more direct
+// way to detect a block (vs. a normal miss) and back off instead of bursting.
+const CONCURRENCY_PER_SOURCE = 1;
 
 export async function importDoujinsFromBackup(
   buffer: ArrayBuffer,
@@ -189,9 +190,14 @@ export async function importDoujinsFromBackup(
 
   const nhCookie = await getSetting<string>("nhCookie");
   // Already-imported entries are skipped outright (no re-fetch) so retrying
-  // a huge backup after an interruption only does work for what's missing.
+  // a huge backup after an interruption only does work for what's missing -
+  // but only entries with real fetched metadata count as "done". A fallback
+  // save (empty tags/artists, site refused at the time) must stay eligible,
+  // or a degraded entry from a bad run can never be upgraded by a later one.
   const existing = new Set(
-    (await db.doujins.toArray()).map((d) => `${d.source}:${d.sourceId}`)
+    (await db.doujins.toArray())
+      .filter((d) => d.tags.length > 0 || d.artists.length > 0)
+      .map((d) => `${d.source}:${d.sourceId}`)
   );
   const result: DoujinBackupResult = {
     found: candidates.length,
@@ -223,30 +229,47 @@ export async function importDoujinsFromBackup(
       result.skipped++;
       return;
     }
+
+    async function fetchMeta(): Promise<Omit<DoujinEntry, "id" | "addedAt" | "favorite">> {
+      if (c.source === "nhentai") return fetchNhentaiGallery(c.id, nhCookie);
+      const res = await fetch(`/api/proxy/${c.source}?id=${c.id}`);
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "lookup failed");
+      return {
+        source: c.source,
+        sourceId: c.id,
+        title: json.title,
+        titleNative: json.titleNative,
+        url: json.url,
+        cover: json.cover,
+        tags: json.tags ?? [],
+        artists: json.artists ?? [],
+        groups: json.groups ?? [],
+        parodies: json.parodies ?? [],
+        characters: json.characters ?? [],
+        language: json.language,
+        pages: json.pages,
+      };
+    }
+
     try {
-      let meta: Omit<DoujinEntry, "id" | "addedAt" | "favorite">;
-      if (c.source === "nhentai") {
-        meta = await fetchNhentaiGallery(c.id, nhCookie);
-      } else {
-        const res = await fetch(`/api/proxy/${c.source}?id=${c.id}`);
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error ?? "lookup failed");
-        meta = {
-          source: c.source,
-          sourceId: c.id,
-          title: json.title,
-          titleNative: json.titleNative,
-          url: json.url,
-          cover: json.cover,
-          tags: json.tags ?? [],
-          artists: json.artists ?? [],
-          groups: json.groups ?? [],
-          parodies: json.parodies ?? [],
-          characters: json.characters ?? [],
-          language: json.language,
-          pages: json.pages,
-        };
+      // A single failure is often a transient block (Cloudflare, a momentary
+      // rate limit) rather than a genuinely dead/missing gallery - give it a
+      // couple of spaced-out retries before accepting the no-metadata
+      // fallback below, which otherwise silently locks in permanently
+      // degraded data for the entry.
+      let meta: Omit<DoujinEntry, "id" | "addedAt" | "favorite"> | undefined;
+      let lastErr: unknown;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        if (attempt > 0) await sleep(3000 * attempt);
+        try {
+          meta = await fetchMeta();
+          break;
+        } catch (e) {
+          lastErr = e;
+        }
       }
+      if (!meta) throw lastErr;
       const outcome = await upsertDoujin(meta);
       result[outcome]++;
     } catch {
