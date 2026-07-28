@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.vercel.shiorii.twa",
+    "sha256_cert_fingerprints": ["DD:28:42:50:23:11:12:6C:AA:18:6F:4B:0F:3E:8D:AF:7A:0C:2C:9A:54:42:41:6C:F8:C4:FE:B3:37:64:C6:CC"]
+  }
+}]
