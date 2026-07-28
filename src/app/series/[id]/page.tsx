@@ -158,7 +158,7 @@ function SeriesDetail({ series, inLibrary }: { series: Series; inLibrary: boolea
         <button
           onClick={goBack}
           aria-label="Back"
-          className="absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-colors hover:bg-black/70 md:left-6 md:top-6"
+          className="absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-line-strong bg-ink-900/70 text-text backdrop-blur-sm transition-colors hover:border-vermillion/60 hover:bg-ink-900/90 hover:text-vermillion-bright md:left-6 md:top-6"
         >
           <ArrowLeft size={18} />
         </button>
