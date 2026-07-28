@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, ChevronDown, FileUp, Loader2, XCircle } from "lucide-react";
 import { getSetting, setSetting } from "@/lib/db";
 import { addDoujinByUrl, importNhentaiFavorites } from "@/lib/doujin";
-import { importDoujinsFromBackup } from "@/lib/doujin-backup";
+import { DEFAULT_BACKUP_CONCURRENCY, importDoujinsFromBackup } from "@/lib/doujin-backup";
+import { Select } from "@/components/ui/Select";
 
 export function ImportPanel() {
   const [open, setOpen] = useState(false);
@@ -143,23 +144,42 @@ function NhFavorites() {
   );
 }
 
+const CONCURRENCY_OPTIONS = [
+  { value: "1", label: "1 - safest (serial, slowest)" },
+  { value: "2", label: "2 - a bit faster" },
+  { value: "3", label: "3 - faster, some risk" },
+  { value: "5", label: "5 - fast, more sites may block" },
+];
+
 function BackupExtract() {
   const [state, setState] = useState<{ kind: "idle" | "busy" | "ok" | "err"; msg?: string }>({
     kind: "idle",
   });
+  const [concurrency, setConcurrency] = useState(String(DEFAULT_BACKUP_CONCURRENCY));
   const fileRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    getSetting<number>("doujinBackupConcurrency").then(
+      (v) => v && setConcurrency(String(v))
+    );
+  }, []);
+
   async function onFile(file: File) {
+    const n = Number(concurrency);
+    await setSetting("doujinBackupConcurrency", n);
     setState({ kind: "busy", msg: `Scanning ${file.name}…` });
     try {
-      const result = await importDoujinsFromBackup(await file.arrayBuffer(), (p) =>
-        setState({
-          kind: "busy",
-          msg:
-            p.phase === "scanning"
-              ? `Found ${p.count} doujin entries among ${p.total} manga…`
-              : `Fetching metadata ${p.count}/${p.total}: ${p.current ?? ""}`,
-        })
+      const result = await importDoujinsFromBackup(
+        await file.arrayBuffer(),
+        { concurrency: n },
+        (p) =>
+          setState({
+            kind: "busy",
+            msg:
+              p.phase === "scanning"
+                ? `Found ${p.count} doujin entries among ${p.total} manga…`
+                : `Fetching metadata ${p.count}/${p.total}: ${p.current ?? ""}`,
+          })
       );
       setState({
         kind: "ok",
@@ -195,6 +215,28 @@ function BackupExtract() {
         format doesn&apos;t reliably expose that flag, so extras just get pulled in
         for you to delete if unwanted.
       </p>
+
+      <div className="mt-3">
+        <label className="mb-1.5 block text-xs font-medium text-faint">
+          Fetch speed
+        </label>
+        <Select
+          value={concurrency}
+          onChange={setConcurrency}
+          options={CONCURRENCY_OPTIONS}
+          className="w-full max-w-xs rounded-lg border border-line-strong bg-ink-900 px-3 py-2 text-sm"
+          panelClassName="w-full max-w-xs"
+        />
+        <p className="mt-1.5 text-[11px] leading-relaxed text-faint">
+          How many entries to fetch at once per site. Higher is faster, but sites
+          like nhentai tend to Cloudflare-block bursts of requests - blocked
+          entries still get added, just with backup-only data (no tags/artists)
+          instead of fresh metadata. 1 is the only value confirmed not to trigger
+          that on a large backup; anything higher is a real speed-for-completeness
+          trade you&apos;re opting into.
+        </p>
+      </div>
+
       <button
         onClick={() => fileRef.current?.click()}
         disabled={state.kind === "busy"}

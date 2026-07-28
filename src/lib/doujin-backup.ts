@@ -136,18 +136,32 @@ async function runPool<T>(
   );
 }
 
-// Per-site concurrency for metadata fetches. Tried 3, then 5: both got the
-// (server-side) proxy Cloudflare-blocked almost immediately on a real large
-// nhentai-heavy backup - every request past the first few silently degrades
-// to the no-metadata fallback instead of erroring loudly, which is far worse
-// than slow. Back to strictly serial per source until there's a more direct
-// way to detect a block (vs. a normal miss) and back off instead of bursting.
-const CONCURRENCY_PER_SOURCE = 1;
+// Per-site concurrency for metadata fetches. Tried 3, then 5 unconditionally
+// once: both got the (server-side) proxy Cloudflare-blocked almost
+// immediately on a real large nhentai-heavy backup - every request past the
+// first few silently degrades to the no-metadata fallback instead of
+// erroring loudly, which is far worse than slow. 1 (serial) is the only
+// value verified not to trigger that - anything higher is a real, visible
+// tradeoff the user opts into via the Annex import UI, not a safe default.
+export const DEFAULT_BACKUP_CONCURRENCY = 1;
+/** UI-enforced ceiling - keeps a fat-fingered value from hammering a source. */
+export const MAX_BACKUP_CONCURRENCY = 6;
+
+export interface DoujinBackupOptions {
+  /** Per-source concurrent metadata fetches. Higher = faster but more likely
+   * to get Cloudflare-blocked, degrading entries to backup-only fallback data. */
+  concurrency?: number;
+}
 
 export async function importDoujinsFromBackup(
   buffer: ArrayBuffer,
+  options?: DoujinBackupOptions,
   onProgress?: (p: DoujinBackupProgress) => void
 ): Promise<DoujinBackupResult> {
+  const concurrency = Math.max(
+    1,
+    Math.min(options?.concurrency ?? DEFAULT_BACKUP_CONCURRENCY, MAX_BACKUP_CONCURRENCY)
+  );
   const { candidates, totalManga } = extractDoujinCandidates(buffer);
   onProgress?.({ phase: "scanning", count: candidates.length, total: totalManga });
   if (candidates.length === 0) {
@@ -268,9 +282,7 @@ export async function importDoujinsFromBackup(
   }
 
   await Promise.all(
-    [...bySource.values()].map((group) =>
-      runPool(group, CONCURRENCY_PER_SOURCE, handleOne)
-    )
+    [...bySource.values()].map((group) => runPool(group, concurrency, handleOne))
   );
   return result;
 }
