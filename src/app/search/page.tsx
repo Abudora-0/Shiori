@@ -3,9 +3,10 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Search as SearchIcon } from "lucide-react";
+import { Search as SearchIcon, SlidersHorizontal } from "lucide-react";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
+import { Modal } from "@/components/ui/Modal";
 import { SeriesResultCard } from "@/components/SeriesResultCard";
 import { searchAniList } from "@/lib/anilist";
 import { useLibraryIds } from "@/lib/hooks";
@@ -32,6 +33,7 @@ export default function SearchPage() {
   const [input, setInput] = useState("");
   const [query, setQuery] = useState("");
   const [type, setType] = useState<TypeFilter>("ALL");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const libraryIds = useLibraryIds();
 
   // Debounce
@@ -58,7 +60,7 @@ export default function SearchPage() {
         subtitle="Find any anime, manga, manhwa or manhua on AniList and add it to your shelf."
       />
 
-      <div className="mb-8 flex flex-wrap items-center gap-3">
+      <div className="mb-8 flex items-center gap-2 md:gap-3">
         <div className="relative flex-1 md:max-w-xl">
           <SearchIcon
             size={18}
@@ -72,7 +74,21 @@ export default function SearchPage() {
             className="w-full rounded-xl border border-line-strong bg-ink-850 py-3 pl-11 pr-4 text-base outline-none transition-colors focus:border-vermillion"
           />
         </div>
-        <div className="flex overflow-hidden rounded-xl border border-line-strong">
+
+        {/* Mobile: type filter collapses into a sheet */}
+        <button
+          onClick={() => setFiltersOpen(true)}
+          aria-label="Filters"
+          className="relative flex shrink-0 items-center gap-1.5 rounded-xl border border-line-strong bg-ink-850 p-3 text-faint md:hidden"
+        >
+          <SlidersHorizontal size={18} />
+          {type !== "ALL" && (
+            <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-vermillion" />
+          )}
+        </button>
+
+        {/* Desktop: type toggle inline */}
+        <div className="hidden overflow-hidden rounded-xl border border-line-strong md:flex">
           {(["ALL", "ANIME", "MANGA"] as const).map((t) => (
             <button
               key={t}
@@ -86,6 +102,26 @@ export default function SearchPage() {
           ))}
         </div>
       </div>
+
+      {/* Mobile filter sheet - type */}
+      <Modal open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filters">
+        <div>
+          <div className="mb-1.5 text-xs font-medium text-faint">Type</div>
+          <div className="flex overflow-hidden rounded-lg border border-line-strong">
+            {(["ALL", "ANIME", "MANGA"] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setType(t)}
+                className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
+                  type === t ? "bg-ink-700 text-text" : "bg-ink-850 text-faint"
+                }`}
+              >
+                {t === "ALL" ? "All" : t === "ANIME" ? "Anime" : "Manga+"}
+              </button>
+            ))}
+          </div>
+        </div>
+      </Modal>
 
       {query.length < 2 ? (
         <div className="py-24 text-center">

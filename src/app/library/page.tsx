@@ -136,22 +136,37 @@ export default function LibraryPage() {
         ))}
       </div>
 
-      {/* Search - own full-width row on mobile; folds into the filters row on desktop */}
-      <div className="relative mb-3 md:hidden">
-        <SearchIcon
-          size={14}
-          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-faint"
-        />
-        <input
-          value={ui.search}
-          onChange={(e) => ui.setSearch(e.target.value)}
-          placeholder="Filter titles…"
-          className="w-full rounded-full border border-line-strong bg-ink-800 py-2 pl-8 pr-3 text-sm outline-none focus:border-vermillion"
-        />
+      {/* Mobile: search + filter button share one row. Status/genre/sort/view
+          all live in the filter sheet instead of cluttering the page. */}
+      <div className="mb-6 flex items-center gap-2 md:hidden">
+        <div className="relative flex-1">
+          <SearchIcon
+            size={14}
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-faint"
+          />
+          <input
+            value={ui.search}
+            onChange={(e) => ui.setSearch(e.target.value)}
+            placeholder="Filter titles…"
+            className="w-full rounded-full border border-line-strong bg-ink-800 py-2 pl-8 pr-3 text-sm outline-none focus:border-vermillion"
+          />
+        </div>
+        <button
+          onClick={() => setFiltersOpen(true)}
+          aria-label="Filters"
+          className="relative flex shrink-0 items-center gap-1.5 rounded-full border border-line-strong bg-ink-800 p-2.5 text-faint"
+        >
+          <SlidersHorizontal size={16} />
+          {(ui.statusFilter !== "all" ||
+            ui.genreFilter !== "all" ||
+            ui.sort !== "updated") && (
+            <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-vermillion" />
+          )}
+        </button>
       </div>
 
-      {/* Filters row */}
-      <div className="mb-6 flex items-center gap-2">
+      {/* Desktop: status chips + search/genre/sort/view, all inline */}
+      <div className="mb-6 hidden items-center gap-2 md:flex">
         <div className="no-scrollbar flex flex-1 gap-1.5 overflow-x-auto">
           <Chip
             active={ui.statusFilter === "all"}
@@ -173,19 +188,7 @@ export default function LibraryPage() {
           ))}
         </div>
 
-        {/* Mobile: genre/sort/view collapse into a filter sheet */}
-        <button
-          onClick={() => setFiltersOpen(true)}
-          aria-label="More filters"
-          className="relative flex shrink-0 items-center gap-1.5 rounded-full border border-line-strong bg-ink-800 px-3 py-2 text-faint md:hidden"
-        >
-          <SlidersHorizontal size={15} />
-          {(ui.genreFilter !== "all" || ui.sort !== "updated") && (
-            <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-vermillion" />
-          )}
-        </button>
-
-        <div className="hidden shrink-0 items-center gap-2 md:flex">
+        <div className="flex shrink-0 items-center gap-2">
           <div className="relative">
             <SearchIcon
               size={14}
@@ -229,9 +232,32 @@ export default function LibraryPage() {
         </div>
       </div>
 
-      {/* Mobile filter sheet - genre, sort, view */}
+      {/* Mobile filter sheet - status, genre, sort, view */}
       <Modal open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filters">
         <div className="space-y-5">
+          <div>
+            <div className="mb-1.5 text-xs font-medium text-faint">Status</div>
+            <div className="flex flex-wrap gap-1.5">
+              <Chip
+                active={ui.statusFilter === "all"}
+                onClick={() => ui.setStatusFilter("all")}
+              >
+                All statuses
+              </Chip>
+              {ALL_STATUSES.map((s) => (
+                <Chip
+                  key={s}
+                  active={ui.statusFilter === s}
+                  onClick={() => ui.setStatusFilter(s)}
+                >
+                  {statusLabel(
+                    s,
+                    ui.kindTab !== "ALL" && isWatched(ui.kindTab) ? "ANIME" : "MANGA"
+                  )}
+                </Chip>
+              ))}
+            </div>
+          </div>
           <div>
             <div className="mb-1.5 text-xs font-medium text-faint">Genre</div>
             <Select
