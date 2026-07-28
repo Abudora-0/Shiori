@@ -1,10 +1,10 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
-import { BookmarkPlus, Heart, Pencil, Plus } from "lucide-react";
+import { ArrowLeft, BookmarkPlus, Heart, Pencil, Plus } from "lucide-react";
 import { db, logActivity } from "@/lib/db";
 import { fetchSeriesById } from "@/lib/anilist";
 import { useEntry, useSeries } from "@/lib/hooks";
@@ -91,10 +91,23 @@ export default function SeriesPage() {
 }
 
 function SeriesDetail({ series, inLibrary }: { series: Series; inLibrary: boolean }) {
+  const router = useRouter();
   const entry = useEntry(series.id);
   const openEdit = useUiStore((s) => s.openEdit);
   const [expanded, setExpanded] = useState(false);
   const total = maxProgress(series);
+
+  function goBack() {
+    // Most of the time this came from Library/Search/Discover/etc. - real
+    // back history is the more correct "return where I came from" than
+    // hardcoding a single destination. Only a direct/shared link has no
+    // useful history to go back to, so fall back to Library then.
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/library");
+    }
+  }
 
   async function addToLibrary() {
     const now = Date.now();
@@ -142,6 +155,13 @@ function SeriesDetail({ series, inLibrary }: { series: Series; inLibrary: boolea
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/55 to-ink-950/15" />
+        <button
+          onClick={goBack}
+          aria-label="Back"
+          className="absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-colors hover:bg-black/70 md:left-6 md:top-6"
+        >
+          <ArrowLeft size={18} />
+        </button>
       </div>
 
       <div className="mx-auto max-w-5xl px-4 md:px-8">
