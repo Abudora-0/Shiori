@@ -75,21 +75,21 @@ export function CoverCard({ item }: { item: LibraryItem }) {
             {statusShort(entry.status, series.kind)}
           </span>
 
-          {/* favorite */}
+          {/* favorite - always visible on touch (no hover to reveal it on mobile) */}
           <button
             onClick={toggleFavorite}
             aria-label="Toggle favorite"
             className={`absolute right-1.5 top-1.5 rounded-full bg-black/60 p-1.5 backdrop-blur-sm transition-all ${
               entry.favorite
                 ? "text-vermillion-bright"
-                : "text-white/50 opacity-0 hover:text-white group-hover:opacity-100"
+                : "text-white/70 hover:text-white md:text-white/50 md:opacity-0 md:group-hover:opacity-100"
             }`}
           >
             <Heart size={14} fill={entry.favorite ? "currentColor" : "none"} />
           </button>
 
-          {/* hover actions */}
-          <div className="absolute inset-x-0 bottom-0 flex translate-y-2 items-end justify-between bg-gradient-to-t from-black/90 via-black/50 to-transparent p-2 pt-8 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          {/* quick actions - always visible on touch, hover-reveal on desktop */}
+          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/90 via-black/50 to-transparent p-2 pt-8 transition-all duration-300 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
             <div className="text-[11px] leading-tight text-white/85">
               <div className="font-semibold text-gold">
                 ★ {formatRating(entry.rating)}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LayoutGrid, List, Search as SearchIcon } from "lucide-react";
+import { LayoutGrid, List, Search as SearchIcon, SlidersHorizontal } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Pagination } from "@/components/ui/Pagination";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
@@ -12,6 +12,7 @@ import { EditEntryModal } from "@/components/library/EditEntryModal";
 import { PinGate } from "@/components/annex/PinGate";
 import { Cover } from "@/components/ui/Cover";
 import { Select } from "@/components/ui/Select";
+import { Modal } from "@/components/ui/Modal";
 import { useLibrary } from "@/lib/hooks";
 import { useUiStore, type LibrarySort } from "@/lib/store";
 import {
@@ -44,6 +45,7 @@ export default function LibraryPage() {
   const items = useLibrary();
   const ui = useUiStore();
   const [page, setPage] = useState(1);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Back to page 1 when filters change
   useEffect(() => {
@@ -134,9 +136,23 @@ export default function LibraryPage() {
         ))}
       </div>
 
+      {/* Search - own full-width row on mobile; folds into the filters row on desktop */}
+      <div className="relative mb-3 md:hidden">
+        <SearchIcon
+          size={14}
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-faint"
+        />
+        <input
+          value={ui.search}
+          onChange={(e) => ui.setSearch(e.target.value)}
+          placeholder="Filter titles…"
+          className="w-full rounded-full border border-line-strong bg-ink-800 py-2 pl-8 pr-3 text-sm outline-none focus:border-vermillion"
+        />
+      </div>
+
       {/* Filters row */}
-      <div className="mb-6 flex flex-wrap items-center gap-2">
-        <div className="no-scrollbar flex gap-1.5 overflow-x-auto">
+      <div className="mb-6 flex items-center gap-2">
+        <div className="no-scrollbar flex flex-1 gap-1.5 overflow-x-auto">
           <Chip
             active={ui.statusFilter === "all"}
             onClick={() => ui.setStatusFilter("all")}
@@ -157,7 +173,19 @@ export default function LibraryPage() {
           ))}
         </div>
 
-        <div className="ml-auto flex items-center gap-2">
+        {/* Mobile: genre/sort/view collapse into a filter sheet */}
+        <button
+          onClick={() => setFiltersOpen(true)}
+          aria-label="More filters"
+          className="relative flex shrink-0 items-center gap-1.5 rounded-full border border-line-strong bg-ink-800 px-3 py-2 text-faint md:hidden"
+        >
+          <SlidersHorizontal size={15} />
+          {(ui.genreFilter !== "all" || ui.sort !== "updated") && (
+            <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-vermillion" />
+          )}
+        </button>
+
+        <div className="hidden shrink-0 items-center gap-2 md:flex">
           <div className="relative">
             <SearchIcon
               size={14}
@@ -200,6 +228,49 @@ export default function LibraryPage() {
           </div>
         </div>
       </div>
+
+      {/* Mobile filter sheet - genre, sort, view */}
+      <Modal open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filters">
+        <div className="space-y-5">
+          <div>
+            <div className="mb-1.5 text-xs font-medium text-faint">Genre</div>
+            <Select
+              value={ui.genreFilter}
+              onChange={ui.setGenreFilter}
+              options={[{ value: "all", label: "All genres" }, ...genres.map((g) => ({ value: g, label: g }))]}
+              className="w-full rounded-lg border border-line-strong bg-ink-800 px-3 py-2.5 text-sm"
+              panelClassName="w-full"
+            />
+          </div>
+          <div>
+            <div className="mb-1.5 text-xs font-medium text-faint">Sort by</div>
+            <Select
+              value={ui.sort}
+              onChange={(v) => ui.setSort(v as LibrarySort)}
+              options={SORTS}
+              className="w-full rounded-lg border border-line-strong bg-ink-800 px-3 py-2.5 text-sm"
+              panelClassName="w-full"
+            />
+          </div>
+          <div>
+            <div className="mb-1.5 text-xs font-medium text-faint">View</div>
+            <div className="flex overflow-hidden rounded-lg border border-line-strong">
+              <button
+                onClick={() => ui.setView("grid")}
+                className={`flex flex-1 items-center justify-center gap-2 py-2.5 text-sm ${ui.view === "grid" ? "bg-ink-700 text-text" : "bg-ink-800 text-faint"}`}
+              >
+                <LayoutGrid size={15} /> Grid
+              </button>
+              <button
+                onClick={() => ui.setView("list")}
+                className={`flex flex-1 items-center justify-center gap-2 py-2.5 text-sm ${ui.view === "list" ? "bg-ink-700 text-text" : "bg-ink-800 text-faint"}`}
+              >
+                <List size={15} /> List
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
 
       {/* Content */}
       {ui.kindTab !== "ALL" && isAdultKind(ui.kindTab) && !ui.annexUnlocked ? (
