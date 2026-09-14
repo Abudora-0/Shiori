@@ -2,9 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Shippori_Mincho, Zen_Kaku_Gothic_New } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { Sidebar } from "@/components/nav/Sidebar";
-import { MobileNav } from "@/components/nav/MobileNav";
-import { CommandPalette } from "@/components/CommandPalette";
+import { AppShell } from "@/components/AppShell";
 
 const shippori = Shippori_Mincho({
   weight: ["500", "600", "700", "800"],
@@ -50,11 +48,7 @@ export default function RootLayout({
           }}
         />
         <Providers>
-          <div className="noise-overlay" aria-hidden />
-          <CommandPalette />
-          <Sidebar />
-          <MobileNav />
-          <main className="min-h-dvh pb-24 md:pb-0 md:pl-20">{children}</main>
+          <AppShell>{children}</AppShell>
         </Providers>
       </body>
     </html>
