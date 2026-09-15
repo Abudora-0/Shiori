@@ -235,9 +235,14 @@ function AutoBackupRow() {
     last?: number;
   } | null>(null);
   const [msg, setMsg] = useState("");
+  // Starts false to match the server (no `window`), then synced from the
+  // real browser check in a mount effect - avoids an SSR/client hydration
+  // mismatch, same as annexUnlocked in store.ts.
+  const [supported, setSupported] = useState(false);
 
   useEffect(() => {
     autoBackupStatus().then(setStatus);
+    setSupported(autoBackupSupported());
   }, []);
 
   async function enable() {
@@ -257,7 +262,7 @@ function AutoBackupRow() {
     setMsg("Auto-backup disabled.");
   }
 
-  if (!autoBackupSupported()) {
+  if (!supported) {
     return (
       <p className="mt-4 border-t border-line pt-4 text-xs text-faint">
         Automatic backups need the File System Access API, which this browser
