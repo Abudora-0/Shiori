@@ -6,7 +6,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { BellRing, CheckCheck, Loader2, RefreshCw } from "lucide-react";
 import { db, logActivity } from "@/lib/db";
 import { checkForUpdates } from "@/lib/updates";
-import { displayTitle, formatDate, isAdultKind, KIND_LABEL } from "@/lib/format";
+import { displayTitle, formatDate, isAdultKind, kindLabel } from "@/lib/format";
 import { useUiStore } from "@/lib/store";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { Cover } from "@/components/ui/Cover";
@@ -15,6 +15,7 @@ export default function UpdatesPage() {
   const [running, setRunning] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const unlocked = useUiStore((s) => s.annexUnlocked);
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
 
   // Pornhwa is manga-side and still checked for new chapters (only Anime/
   // Hentai are excluded, in updates.ts) - filter its rows here too, or a
@@ -140,7 +141,7 @@ export default function UpdatesPage() {
                   {displayTitle(series!.title)}
                 </Link>
                 <div className="mt-0.5 text-xs text-faint">
-                  {KIND_LABEL[series!.kind]} · you&apos;re at ch. {entry!.progress} ·
+                  {kindLabel(series!.kind, matureRevealed)} · you&apos;re at ch. {entry!.progress} ·
                   latest ch. {update.latest}
                   {update.provider ? ` · via ${update.provider}` : ""}
                 </div>

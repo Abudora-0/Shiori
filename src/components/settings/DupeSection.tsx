@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { ArrowRight, Loader2, Merge } from "lucide-react";
 import { findDuplicates, mergeSeries, type DupePair } from "@/lib/merge-series";
-import { displayTitle, KIND_LABEL } from "@/lib/format";
+import { displayTitle, kindLabel } from "@/lib/format";
+import { useUiStore } from "@/lib/store";
 import { Cover } from "@/components/ui/Cover";
 
 export function DupeSection() {
@@ -77,6 +78,7 @@ export function DupeSection() {
 }
 
 function MiniCard({ item }: { item: DupePair["a"] }) {
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
   return (
     <div className="flex min-w-0 flex-1 items-center gap-2">
       <div className="h-12 w-8 shrink-0 overflow-hidden rounded">
@@ -87,7 +89,7 @@ function MiniCard({ item }: { item: DupePair["a"] }) {
           {displayTitle(item.series.title)}
         </div>
         <div className="text-[10px] text-faint">
-          {item.series.id > 0 ? "AniList" : "Local"} · {KIND_LABEL[item.series.kind]} ·
+          {item.series.id > 0 ? "AniList" : "Local"} · {kindLabel(item.series.kind, matureRevealed)} ·
           ch. {item.entry.progress}
         </div>
       </div>

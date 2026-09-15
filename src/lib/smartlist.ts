@@ -1,6 +1,6 @@
 import type { SmartFilter } from "./types";
 import type { LibraryItem } from "./hooks";
-import { KIND_LABEL, statusLabel } from "./format";
+import { kindLabel, statusLabel } from "./format";
 
 export function matchSmart(filter: SmartFilter, item: LibraryItem): boolean {
   if (filter.kinds?.length && !filter.kinds.includes(item.series.kind)) return false;
@@ -13,10 +13,10 @@ export function matchSmart(filter: SmartFilter, item: LibraryItem): boolean {
   return true;
 }
 
-export function describeSmart(filter: SmartFilter): string {
+export function describeSmart(filter: SmartFilter, matureRevealed: boolean): string {
   const parts: string[] = [];
   if (filter.kinds?.length)
-    parts.push(filter.kinds.map((k) => KIND_LABEL[k]).join("/"));
+    parts.push(filter.kinds.map((k) => kindLabel(k, matureRevealed)).join("/"));
   if (filter.statuses?.length)
     parts.push(filter.statuses.map((s) => statusLabel(s, "MANGA")).join("/"));
   if (filter.genre) parts.push(filter.genre);

@@ -7,7 +7,8 @@ import { Modal } from "@/components/ui/Modal";
 import { Cover } from "@/components/ui/Cover";
 import { searchAniList } from "@/lib/anilist";
 import { mergeSeries } from "@/lib/merge-series";
-import { displayTitle, KIND_LABEL } from "@/lib/format";
+import { displayTitle, kindLabel } from "@/lib/format";
+import { useUiStore } from "@/lib/store";
 import type { Series } from "@/lib/types";
 
 /** Local (Mihon/scraped) entries can be upgraded to their AniList record. */
@@ -18,6 +19,7 @@ export function LinkToAniList({ series }: { series: Series }) {
   const [busy, setBusy] = useState(false);
   const [linking, setLinking] = useState<number | null>(null);
   const router = useRouter();
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
 
   if (series.id > 0) return null;
 
@@ -97,7 +99,7 @@ export function LinkToAniList({ series }: { series: Series }) {
                     {displayTitle(r.title)}
                   </div>
                   <div className="text-[11px] text-faint">
-                    {KIND_LABEL[r.kind]}
+                    {kindLabel(r.kind, matureRevealed)}
                     {r.year ? ` · ${r.year}` : ""}
                     {r.chapters ? ` · ${r.chapters} ch` : ""}
                   </div>

@@ -39,6 +39,23 @@ export function isAdultKind(kind: MediaKind): boolean {
   return kind === "HENTAI" || kind === "PORNHWA";
 }
 
+/** Vague stand-ins for Hentai/Pornhwa, shown until age is confirmed in Settings. */
+const VAGUE_KIND_LABEL: Partial<Record<MediaKind, string>> = {
+  HENTAI: "18+ (Anime)",
+  PORNHWA: "18+ (Manhwa)",
+};
+
+/**
+ * KIND_LABEL, but Hentai/Pornhwa stay vague until `revealed` (the
+ * matureRevealed setting) is true - keeps the real names out of tab bars,
+ * lock-screen titles and pickers by default, even before the Annex PIN is
+ * ever involved.
+ */
+export function kindLabel(kind: MediaKind, revealed: boolean): string {
+  if (isAdultKind(kind) && !revealed) return VAGUE_KIND_LABEL[kind]!;
+  return KIND_LABEL[kind];
+}
+
 export function statusKanji(status: EntryStatus, kind: MediaKind): string {
   switch (status) {
     case "current":

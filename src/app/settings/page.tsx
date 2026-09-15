@@ -13,6 +13,7 @@ import {
   Link2,
   Loader2,
   RefreshCw,
+  ShieldCheck,
   Tags,
   Trash2,
   Unlink,
@@ -21,6 +22,8 @@ import {
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { db, getMalClientId, getSetting, setSetting } from "@/lib/db";
 import { lockAnnex, setPin, verifyPin } from "@/lib/annex";
+import { setMatureRevealed } from "@/lib/mature";
+import { useUiStore } from "@/lib/store";
 import {
   autoBackupStatus,
   autoBackupSupported,
@@ -190,6 +193,8 @@ export default function SettingsPage() {
         <DupeSection />
 
         <DoujinCleanupSection />
+
+        <MatureLabelsSection />
 
         <AnnexSection />
 
@@ -812,6 +817,46 @@ function SourceHealthSection() {
           ))}
         </div>
       )}
+    </section>
+  );
+}
+
+function MatureLabelsSection() {
+  const revealed = useUiStore((s) => s.matureRevealed);
+  const setRevealed = useUiStore((s) => s.setMatureRevealed);
+  const [busy, setBusy] = useState(false);
+
+  async function toggle(next: boolean) {
+    setBusy(true);
+    await setMatureRevealed(next);
+    setRevealed(next);
+    setBusy(false);
+  }
+
+  return (
+    <section className="rounded-xl border border-line bg-ink-850 p-5">
+      <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
+        <ShieldCheck size={17} className="text-mizu" /> Mature content
+      </h2>
+      <p className="mt-1.5 text-xs leading-relaxed text-muted">
+        Hentai and Pornhwa show up as vague &quot;18+&quot; tabs everywhere in the
+        app by default, so a passing glance doesn&apos;t spell it out. Confirm
+        you&apos;re 18 or older to show their real names instead.
+      </p>
+      <label className="mt-4 flex items-center gap-2.5 text-sm">
+        <input
+          type="checkbox"
+          checked={revealed}
+          disabled={busy}
+          onChange={(e) => toggle(e.target.checked)}
+          className="accent-[var(--vermillion)]"
+        />
+        I&apos;m 18 or older, show the real names
+      </label>
+      <p className="mt-2 text-[11px] text-faint">
+        This only changes labels. Opening that content still needs the Annex
+        PIN below, same as before.
+      </p>
     </section>
   );
 }

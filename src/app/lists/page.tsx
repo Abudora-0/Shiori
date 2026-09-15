@@ -10,7 +10,7 @@ import {
   ALL_STATUSES,
   formatDate,
   isAdultKind,
-  KIND_LABEL,
+  kindLabel,
   statusLabel,
 } from "@/lib/format";
 import { describeSmart, matchSmart } from "@/lib/smartlist";
@@ -96,6 +96,7 @@ export default function ListsPage() {
 }
 
 function SmartListBuilder({ items }: { items: LibraryItem[] | undefined }) {
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [kinds, setKinds] = useState<MediaKind[]>([]);
@@ -154,7 +155,7 @@ function SmartListBuilder({ items }: { items: LibraryItem[] | undefined }) {
           <div className="flex flex-wrap gap-1.5">
             {ALL_KINDS.map((k) => (
               <Chip key={k} active={kinds.includes(k)} onClick={() => toggle(kinds, k, setKinds)}>
-                {KIND_LABEL[k]}
+                {kindLabel(k, matureRevealed)}
               </Chip>
             ))}
           </div>
@@ -224,6 +225,7 @@ function ListCard({
   items: LibraryItem[] | undefined;
 }) {
   const unlocked = useUiStore((s) => s.annexUnlocked);
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
   const smartIds =
     list.smart && items
       ? items.filter((i) => matchSmart(list.smart!, i)).map((i) => i.series.id)
@@ -287,7 +289,7 @@ function ListCard({
           {memberIds.length} series · updated {formatDate(list.updatedAt)}
         </div>
         <p className="mt-1.5 line-clamp-2 text-xs text-muted">
-          {list.smart ? describeSmart(list.smart) : list.description}
+          {list.smart ? describeSmart(list.smart, matureRevealed) : list.description}
         </p>
       </div>
       <button

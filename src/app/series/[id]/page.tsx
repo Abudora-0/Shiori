@@ -15,6 +15,7 @@ import {
   isWatched,
   KIND_KANJI,
   KIND_LABEL,
+  kindLabel,
   maxProgress,
   progressUnit,
   statusLabel,
@@ -53,6 +54,7 @@ export default function SeriesPage() {
   });
 
   const series = local ?? remote.data;
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
 
   if (!series) {
     return (
@@ -78,8 +80,8 @@ export default function SeriesPage() {
   if (isAdultKind(series.kind)) {
     return (
       <PinGate
-        title={`Unlock ${KIND_LABEL[series.kind]}`}
-        subtitle="This series is on the Hentai/Pornhwa shelf, which hides behind the Annex PIN. It locks again when the browser closes."
+        title={`Unlock ${kindLabel(series.kind, matureRevealed)}`}
+        subtitle="This series is on a shelf that hides behind the Annex PIN. It locks again when the browser closes."
         kanji={KIND_KANJI[series.kind]}
       >
         <SeriesDetail series={series} inLibrary={!!entry} />

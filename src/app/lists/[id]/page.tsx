@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useLiveQuery } from "dexie-react-hooks";
 import { ArrowLeft, Check, Pencil, Sparkles, Trash2, X } from "lucide-react";
 import { db } from "@/lib/db";
-import { displayTitle, formatRating, isAdultKind, KIND_LABEL } from "@/lib/format";
+import { displayTitle, formatRating, isAdultKind, kindLabel } from "@/lib/format";
 import { describeSmart, matchSmart } from "@/lib/smartlist";
 import { useLibrary } from "@/lib/hooks";
 import { useUiStore } from "@/lib/store";
@@ -24,6 +24,7 @@ export default function ListDetailPage() {
     [id]
   );
   const unlocked = useUiStore((s) => s.annexUnlocked);
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
   // Only smart lists need the full library join - skip it for manual lists
   const library = useLibrary(list === undefined || !!list?.smart);
   // Manual lists' raw seriesIds bypass useLibrary()'s Annex gate entirely -
@@ -152,7 +153,7 @@ export default function ListDetailPage() {
             </div>
             <p className="relative z-10 mt-2 text-sm text-muted">
               {list.smart
-                ? describeSmart(list.smart)
+                ? describeSmart(list.smart, matureRevealed)
                 : list.description || `${list.seriesIds.length} series`}
             </p>
           </>
@@ -187,7 +188,7 @@ export default function ListDetailPage() {
                 <div className="mt-1.5 truncate text-[13px] font-medium text-text/90 group-hover:text-white">
                   {displayTitle(series!.title)}
                 </div>
-                <div className="text-[11px] text-faint">{KIND_LABEL[series!.kind]}</div>
+                <div className="text-[11px] text-faint">{kindLabel(series!.kind, matureRevealed)}</div>
               </Link>
               {!list.smart && (
                 <button

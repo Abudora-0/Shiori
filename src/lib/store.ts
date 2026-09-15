@@ -21,6 +21,13 @@ interface UiState {
    * hydration mismatch; see PinGate's own "loading" state for the same reason.
    */
   annexUnlocked: boolean;
+  /**
+   * Whether Hentai/Pornhwa show their real names instead of a vague "18+"
+   * label, everywhere the label appears. Synced from a persisted setting by
+   * a mount effect in Providers, same reasoning as annexUnlocked above -
+   * every reader needs this live, not just the Settings toggle that sets it.
+   */
+  matureRevealed: boolean;
   setKindTab: (k: MediaKind | "ALL") => void;
   setStatusFilter: (s: EntryStatus | "all") => void;
   setGenreFilter: (g: string | "all") => void;
@@ -30,6 +37,7 @@ interface UiState {
   openEdit: (seriesId: number) => void;
   closeEdit: () => void;
   setAnnexUnlocked: (v: boolean) => void;
+  setMatureRevealed: (v: boolean) => void;
 }
 
 export const useUiStore = create<UiState>((set) => ({
@@ -41,6 +49,7 @@ export const useUiStore = create<UiState>((set) => ({
   view: "grid",
   editSeriesId: null,
   annexUnlocked: false,
+  matureRevealed: false,
   setKindTab: (kindTab) => set({ kindTab }),
   setStatusFilter: (statusFilter) => set({ statusFilter }),
   setGenreFilter: (genreFilter) => set({ genreFilter }),
@@ -50,4 +59,5 @@ export const useUiStore = create<UiState>((set) => ({
   openEdit: (editSeriesId) => set({ editSeriesId }),
   closeEdit: () => set({ editSeriesId: null }),
   setAnnexUnlocked: (annexUnlocked) => set({ annexUnlocked }),
+  setMatureRevealed: (matureRevealed) => set({ matureRevealed }),
 }));

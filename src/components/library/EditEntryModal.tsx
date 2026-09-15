@@ -13,7 +13,7 @@ import {
   ALL_STATUSES,
   displayTitle,
   isWatched,
-  KIND_LABEL,
+  kindLabel,
   maxProgress,
   statusLabel,
 } from "@/lib/format";
@@ -23,6 +23,7 @@ import type { EntryStatus, MediaKind } from "@/lib/types";
 export function EditEntryModal() {
   const seriesId = useUiStore((s) => s.editSeriesId);
   const close = useUiStore((s) => s.closeEdit);
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
   const series = useSeries(seriesId);
   const entry = useEntry(seriesId);
 
@@ -195,7 +196,7 @@ export function EditEntryModal() {
             <Select
               value={kind ?? series.kind}
               onChange={(v) => setKind(v as MediaKind)}
-              options={ALL_KINDS.map((k) => ({ value: k, label: KIND_LABEL[k] }))}
+              options={ALL_KINDS.map((k) => ({ value: k, label: kindLabel(k, matureRevealed) }))}
               className="w-full rounded-lg border border-line-strong bg-ink-900 px-3 py-2 text-sm"
             />
           </div>

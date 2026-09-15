@@ -8,7 +8,8 @@ import { CharacterModal } from "./CharacterModal";
 import { db } from "@/lib/db";
 import { fetchSeriesExtra } from "@/lib/anilist";
 import { useLibraryIds } from "@/lib/hooks";
-import { displayTitle, KIND_LABEL } from "@/lib/format";
+import { displayTitle, kindLabel } from "@/lib/format";
+import { useUiStore } from "@/lib/store";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Cover } from "@/components/ui/Cover";
 import type { SeriesExtra } from "@/lib/types";
@@ -33,6 +34,7 @@ function useSeriesExtra(seriesId: number) {
 export function ExtraSections({ seriesId }: { seriesId: number }) {
   const { data, isLoading, isError } = useSeriesExtra(seriesId);
   const libraryIds = useLibraryIds();
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
   const [characterId, setCharacterId] = useState<number | null>(null);
 
   if (seriesId < 0) return null;
@@ -156,7 +158,7 @@ export function ExtraSections({ seriesId }: { seriesId: number }) {
                   <div className="mt-1 truncate text-xs text-text/90">
                     {displayTitle(r.title)}
                   </div>
-                  <div className="text-[10px] text-faint">{KIND_LABEL[r.kind]}</div>
+                  <div className="text-[10px] text-faint">{kindLabel(r.kind, matureRevealed)}</div>
                 </Link>
               );
             })}

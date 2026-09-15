@@ -2,8 +2,10 @@
 
 import { useMemo, useState } from "react";
 import type { LibraryItem } from "@/lib/hooks";
-import { KIND_LABEL } from "@/lib/format";
+import { kindLabel } from "@/lib/format";
+import { useUiStore } from "@/lib/store";
 import { Select } from "@/components/ui/Select";
+import type { MediaKind } from "@/lib/types";
 
 const MONTHS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 
@@ -15,6 +17,7 @@ const MONTHS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
  * library write while the page is open.
  */
 export function YearReview({ items }: { items: LibraryItem[] | undefined }) {
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
   const [year, setYear] = useState(new Date().getFullYear());
 
   const years = useMemo(() => {
@@ -93,7 +96,7 @@ export function YearReview({ items }: { items: LibraryItem[] | undefined }) {
             {[...s.byKind.entries()].map(([k, n]) => (
               <Row
                 key={k}
-                label={`· ${KIND_LABEL[k as keyof typeof KIND_LABEL] ?? k}`}
+                label={`· ${kindLabel(k as MediaKind, matureRevealed)}`}
                 value={String(n)}
                 muted
               />

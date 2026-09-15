@@ -11,11 +11,12 @@ import { useLibrary } from "@/lib/hooks";
 import {
   ALL_STATUSES,
   isWatched,
-  KIND_LABEL,
+  kindLabel,
   statusLabel,
   STATUS_COLOR,
 } from "@/lib/format";
-import type { EntryStatus } from "@/lib/types";
+import { useUiStore } from "@/lib/store";
+import type { EntryStatus, MediaKind } from "@/lib/types";
 
 const KIND_COLORS: Record<string, string> = {
   ANIME: "var(--mizu)",
@@ -244,6 +245,7 @@ export default function StatsPage() {
 }
 
 function Donut({ data, total }: { data: [string, number][]; total: number }) {
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
   const r = 40;
   const circ = 2 * Math.PI * r;
   let offset = 0;
@@ -277,7 +279,7 @@ function Donut({ data, total }: { data: [string, number][]; total: number }) {
               style={{ background: KIND_COLORS[kind] ?? "var(--ink-500)" }}
             />
             <span className="text-muted">
-              {KIND_LABEL[kind as keyof typeof KIND_LABEL] ?? kind}
+              {kindLabel(kind as MediaKind, matureRevealed)}
             </span>
             <span className="text-faint">{count}</span>
           </div>

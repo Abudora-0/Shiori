@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { BookmarkCheck, BookmarkPlus } from "lucide-react";
 import { db, logActivity } from "@/lib/db";
-import { displayTitle, KIND_LABEL } from "@/lib/format";
+import { displayTitle, kindLabel } from "@/lib/format";
+import { useUiStore } from "@/lib/store";
 import { Cover } from "@/components/ui/Cover";
 import type { Series } from "@/lib/types";
 
@@ -15,6 +16,8 @@ export function SeriesResultCard({
   series: Series;
   inLibrary: boolean;
 }) {
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
+
   async function add(e: React.MouseEvent) {
     e.preventDefault();
     const now = Date.now();
@@ -67,7 +70,7 @@ export function SeriesResultCard({
         {displayTitle(series.title)}
       </div>
       <div className="text-[11px] text-faint">
-        {KIND_LABEL[series.kind]}
+        {kindLabel(series.kind, matureRevealed)}
         {series.year ? ` · ${series.year}` : ""}
       </div>
     </Link>

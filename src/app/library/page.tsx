@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { LayoutGrid, List, Search as SearchIcon, SlidersHorizontal } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { Pagination } from "@/components/ui/Pagination";
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { Chip } from "@/components/ui/Chip";
@@ -23,7 +24,7 @@ import {
   isAdultKind,
   isWatched,
   KIND_KANJI,
-  KIND_LABEL,
+  kindLabel,
   maxProgress,
   progressUnit,
   statusLabel,
@@ -43,7 +44,28 @@ const SORTS: { value: LibrarySort; label: string }[] = [
 
 export default function LibraryPage() {
   const items = useLibrary();
-  const ui = useUiStore();
+  // Selected subset (shallow-compared), not the whole store - this page
+  // doesn't read editSeriesId/openEdit/closeEdit/setAnnexUnlocked, so a
+  // whole-store subscription here would re-render the entire grid (all
+  // CoverCards) every time the edit modal opens/closes from anywhere.
+  const ui = useUiStore(
+    useShallow((s) => ({
+      kindTab: s.kindTab,
+      statusFilter: s.statusFilter,
+      genreFilter: s.genreFilter,
+      sort: s.sort,
+      search: s.search,
+      view: s.view,
+      annexUnlocked: s.annexUnlocked,
+      matureRevealed: s.matureRevealed,
+      setKindTab: s.setKindTab,
+      setStatusFilter: s.setStatusFilter,
+      setGenreFilter: s.setGenreFilter,
+      setSort: s.setSort,
+      setSearch: s.setSearch,
+      setView: s.setView,
+    }))
+  );
   const [page, setPage] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -130,7 +152,7 @@ export default function LibraryPage() {
                 : "text-faint hover:text-muted"
             }`}
           >
-            {k === "ALL" ? "All" : KIND_LABEL[k]}
+            {k === "ALL" ? "All" : kindLabel(k, ui.matureRevealed)}
             <span className="ml-1.5 text-xs text-faint">{counts[k] ?? 0}</span>
           </button>
         ))}
@@ -301,7 +323,7 @@ export default function LibraryPage() {
       {/* Content */}
       {ui.kindTab !== "ALL" && isAdultKind(ui.kindTab) && !ui.annexUnlocked ? (
         <PinGate
-          title={`Unlock ${KIND_LABEL[ui.kindTab]}`}
+          title={`Unlock ${kindLabel(ui.kindTab, ui.matureRevealed)}`}
           subtitle="This shelf hides behind the Annex PIN, same as the doujin shelf. It locks again when the browser closes."
           kanji={KIND_KANJI[ui.kindTab]}
         >
@@ -343,6 +365,7 @@ function ListView({
   items: NonNullable<ReturnType<typeof useLibrary>>;
 }) {
   const openEdit = useUiStore((s) => s.openEdit);
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
   return (
     <div className="overflow-hidden rounded-xl border border-line">
       {items.map(({ series, entry }, i) => {
@@ -365,7 +388,7 @@ function ListView({
                 {displayTitle(series.title)}
               </div>
               <div className="text-xs text-faint">
-                {KIND_LABEL[series.kind]}
+                {kindLabel(series.kind, matureRevealed)}
                 {series.year ? ` · ${series.year}` : ""}
               </div>
             </div>

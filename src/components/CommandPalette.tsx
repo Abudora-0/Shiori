@@ -6,7 +6,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { CornerDownLeft, Plus, Search as SearchIcon } from "lucide-react";
 import { db, logActivity } from "@/lib/db";
 import { useLibrary } from "@/lib/hooks";
-import { displayTitle, formatRating, KIND_LABEL, statusShort } from "@/lib/format";
+import { displayTitle, formatRating, kindLabel, statusShort } from "@/lib/format";
+import { useUiStore } from "@/lib/store";
 import { Cover } from "@/components/ui/Cover";
 
 /** Global quick search - Ctrl+K / Cmd+K from anywhere. */
@@ -20,6 +21,7 @@ export function CommandPalette() {
   // this is mounted globally, so an eager query here would re-run on every
   // library write anywhere in the app even while closed.
   const items = useLibrary(open);
+  const matureRevealed = useUiStore((s) => s.matureRevealed);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -156,7 +158,7 @@ export function CommandPalette() {
                         {displayTitle(item.series.title)}
                       </div>
                       <div className="text-[11px] text-faint">
-                        {KIND_LABEL[item.series.kind]} ·{" "}
+                        {kindLabel(item.series.kind, matureRevealed)} ·{" "}
                         {statusShort(item.entry.status, item.series.kind)} · ch.{" "}
                         {item.entry.progress} · ★ {formatRating(item.entry.rating)}
                       </div>
