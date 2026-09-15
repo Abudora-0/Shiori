@@ -21,7 +21,6 @@ import {
 import { KanjiHeading } from "@/components/ui/KanjiHeading";
 import { db, getMalClientId, getSetting, setSetting } from "@/lib/db";
 import { lockAnnex, setPin, verifyPin } from "@/lib/annex";
-import { fixMissingCovers, reclassifyLibrary } from "@/lib/maintenance";
 import {
   autoBackupStatus,
   autoBackupSupported,
@@ -46,8 +45,10 @@ import {
   type AniListConnection,
 } from "@/lib/anilist-sync";
 import { testAllSources, type SourceHealth } from "@/lib/source-health";
+import { fixMissingCovers, reclassifyLibrary } from "@/lib/maintenance";
 import { DupeSection } from "@/components/settings/DupeSection";
 import { DoujinCleanupSection } from "@/components/settings/DoujinCleanupSection";
+import { InstallSection } from "@/components/settings/InstallSection";
 import {
   clearAllData,
   downloadBackup,
@@ -106,6 +107,8 @@ export default function SettingsPage() {
 
       <div className="space-y-6 pb-16">
         <ThemeSection />
+
+        <InstallSection />
 
         {/* MAL Client ID */}
         <section className="rounded-xl border border-line bg-ink-850 p-5">

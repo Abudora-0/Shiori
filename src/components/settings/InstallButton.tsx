@@ -29,11 +29,7 @@ export function InstallButton({ label }: { label: string }) {
   }, []);
 
   if (installed) {
-    return (
-      <span className="inline-flex items-center gap-2 rounded-lg border border-line-strong px-6 py-2.5 text-sm font-medium text-muted">
-        Shiori is already installed
-      </span>
-    );
+    return <span className="text-xs text-matcha">Already installed ✓</span>;
   }
 
   if (!deferred) return null;
@@ -46,7 +42,7 @@ export function InstallButton({ label }: { label: string }) {
         const choice = await deferred.userChoice;
         if (choice.outcome === "accepted") setDeferred(null);
       }}
-      className="rounded-lg bg-vermillion px-6 py-2.5 text-sm font-semibold text-white shadow-[0_0_16px_rgba(230,57,70,0.4)] transition-colors hover:bg-vermillion-bright"
+      className="flex shrink-0 items-center gap-1.5 rounded-lg bg-vermillion px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-vermillion-bright"
     >
       {label}
     </button>
