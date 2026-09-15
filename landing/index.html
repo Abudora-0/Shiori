@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Install Shiori</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <meta
     name="description"
     content="Shiori is a local-first tracker for anime, manga, manhwa and manhua. Open it and install it as an app on desktop or mobile."
@@ -18,6 +19,19 @@
 </head>
 <body>
   <div class="noise-overlay" aria-hidden="true"></div>
+
+  <nav class="topbar">
+    <a class="topbar-brand" href="/">
+      <span class="topbar-badge" aria-hidden="true">栞</span>
+      <span>Shiori</span>
+    </a>
+    <div class="topbar-links">
+      <a href="#showcase">Screenshots</a>
+      <a href="#features">Features</a>
+      <a href="https://github.com/Abudora-0/Shiori" target="_blank" rel="noreferrer">GitHub</a>
+      <a class="topbar-cta" href="https://shiorii.vercel.app">Open app</a>
+    </div>
+  </nav>
 
   <main class="wrap">
     <section class="hero">
@@ -44,6 +58,23 @@
           The one-tap install button lives on Shiori&#39;s own Settings page,
           since installing only works from the app itself.
         </p>
+      </div>
+    </section>
+
+    <section class="showcase" id="showcase">
+      <div class="browser-frame">
+        <div class="browser-frame-bar">
+          <span class="dot dot-red" aria-hidden="true"></span>
+          <span class="dot dot-yellow" aria-hidden="true"></span>
+          <span class="dot dot-green" aria-hidden="true"></span>
+          <span class="browser-frame-url">shiorii.vercel.app</span>
+        </div>
+        <img
+          src="assets/dashboard.png"
+          alt="Shiori's dashboard, showing library stats and continue watching and reading rails"
+          width="1440"
+          height="900"
+        />
       </div>
     </section>
 
@@ -107,11 +138,20 @@
             <li><span class="num">2</span><span>Tap the Share icon, then &quot;Add to Home Screen&quot;.</span></li>
             <li><span class="num">3</span><span>Confirm. It opens without Safari&#39;s toolbar, like a native app.</span></li>
           </ol>
+
+          <p class="panel-note">
+            Nothing showing up anywhere, not even &quot;Add to Home screen&quot; in
+            your browser&#39;s menu? That&#39;s your phone or browser blocking app
+            installs, not a problem with Shiori. It varies by device: try updating
+            your browser, turning off Data Saver or Lite mode, or checking for a
+            shortcut/autostart permission for it in your phone&#39;s app settings
+            (common on Xiaomi, Oppo and Vivo phones).
+          </p>
         </div>
       </div>
     </section>
 
-    <section class="features">
+    <section class="features" id="features">
       <span
         class="kanji-watermark"
         style="left: 0; top: -1rem; font-size: 5rem;"
@@ -159,8 +199,32 @@
     </section>
 
     <footer>
-      栞 Shiori. A bookmark between worlds. Local-first, no accounts, no cloud.<br />
-      <a href="https://shiorii.vercel.app">Use the web version</a>
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="kanji-badge small" aria-hidden="true">栞</span>
+          <div>
+            <div class="footer-name">Shiori</div>
+            <p class="footer-tagline">
+              A bookmark between worlds. Local-first, no accounts, no cloud.
+            </p>
+          </div>
+        </div>
+        <div class="footer-links">
+          <a href="https://shiorii.vercel.app">Use the web version</a>
+          <a href="https://github.com/Abudora-0/Shiori" target="_blank" rel="noreferrer"
+            >GitHub</a
+          >
+          <a
+            href="https://github.com/Abudora-0/Shiori/blob/main/LICENSE"
+            target="_blank"
+            rel="noreferrer"
+            >MIT License</a
+          >
+        </div>
+      </div>
+      <p class="footer-copy">
+        Built for readers and watchers who keep their own shelf.
+      </p>
     </footer>
   </main>
 </body>

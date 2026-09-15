@@ -13,6 +13,8 @@
   [![PWA Ready](https://img.shields.io/badge/PWA-installable-5A0FC8?logo=pwa&logoColor=white)](#)
   [![No account required](https://img.shields.io/badge/account-not%20required-brightgreen)](#)
 
+  [**Landing page & install guide →**](https://shiori-landing.vercel.app/)
+
 </div>
 
 <br/>
